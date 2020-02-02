@@ -1,0 +1,7 @@
+FROM kennethreitz/pipenv
+
+ADD ./app /app/app
+VOLUME /socks
+WORKDIR /app
+COPY ./manage.py /app
+CMD uvicorn --uds /socks/smdb.sock --log-level debug app.main:app

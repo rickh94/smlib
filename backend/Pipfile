@@ -1,0 +1,31 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+ipython = "*"
+pytest = "*"
+pymongo = "*"
+requests = "*"
+ptpython = "*"
+pytest-cov = "*"
+
+[packages]
+fastapi = {extras = ["full"],version = "*"}
+uvicorn = "*"
+pydantic = {extras = ["email"],version = "*"}
+python-multipart = "*"
+pyjwt = "*"
+passlib = "*"
+motor = "*"
+redis = "*"
+aiohttp = "*"
+aiodns = "*"
+bcrypt = "*"
+ujson = "*"
+jinja2 = "*"
+minio = "*"
+
+[requires]
+python_version = "3.8"

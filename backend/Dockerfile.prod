@@ -1,0 +1,7 @@
+from kennethreitz/pipenv
+
+ADD ./app /app/app
+VOLUME /socks
+WORKDIR /app
+COPY ./manage.py /app
+CMD uvicorn --uds /socks/smdb.sock app.main:app

@@ -1,0 +1,7 @@
+from kennethreitz/pipenv
+
+RUN pipenv install --dev --system
+ADD ./app /app/app
+WORKDIR /app
+
+CMD pytest --rootdir=/app/app --cov=app
