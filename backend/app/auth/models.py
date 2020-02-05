@@ -26,6 +26,9 @@ class UserWithRole(User):
 
 
 class UserInDB(UserWithRole):
+    class Config:
+        use_enum_values = True
+
     _id: Optional[str] = None
 
     @property

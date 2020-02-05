@@ -26,6 +26,9 @@ bcrypt = "*"
 ujson = "*"
 jinja2 = "*"
 minio = "*"
+aiofiles = "*"
+wtforms = "*"
+itsdangerous = "*"
 
 [requires]
 python_version = "3.8"

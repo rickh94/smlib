@@ -87,15 +87,18 @@ def generate_otp(email: str) -> str:
     return code
 
 
-def generate_magic_link(email: str, next_location: str = None) -> str:
+def generate_magic_link(
+    email: str, next_location: str = None, location: str = ""
+) -> str:
     url_secret = secrets.token_urlsafe()
     secret_hash = pwd_context.hash(url_secret)
     url_secret_store.set(f"url_secret:{email}", secret_hash)
     url_secret_store.expire(f"url_secret:{email}", datetime.timedelta(minutes=5))
     host = os.getenv("HOSTNAME", "localhost")
-    magic_link = f"{host}/login?secret={url_secret}"
+    magic_link = f"{host}{location}?secret={url_secret}"
     if next_location:
         magic_link += "&next=" + quote_plus(next_location)
+    return magic_link
 
 
 def verify_magic_link(email: str, secret: str):

@@ -1,0 +1,22 @@
+{
+  "name": "static-src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "autoprefixer": "^9.7.4",
+    "postcss-cli": "^7.1.0",
+    "postcss-import": "^12.0.1",
+    "postcss": "^7.0.26",
+    "tailwindcss": "^1.1.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "postcss -o out/main.css main.css && cp *.js out",
+    "build:dev": "postcss -o out/main.css main.css && cp *.js out && rm out/*.config.js",
+    "build:prod": "postcss --env production -o out/main.css main.css && cp *.js out && rm out/*.config.js",
+    "build:watch": "postcss -w -o ../static/main.css main.css",
+    "postcss": "postcss",
+    "copyfiles": "postcss -o out/main.css main.css && cp *.js out/*.css ../static && rm ../static/*.config.js"
+  }
+}

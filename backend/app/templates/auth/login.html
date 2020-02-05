@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block body %}
+  <form action="/auth/login{% if next_location %}?next={{ next_location }}{% endif %}"
+        method="post" class="w-full md:max-w-md mx-auto">
+    {{ form.csrf_token }}
+    <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">Login</h1>
+    {% if error %}
+      <div class="mt-1 text-red-700" id="error">{{ error }}</div>
+    {% endif %}
+    <div class="mb-4">
+      {{ macros.text_input(form.email, margin_bottom=False) }}
+      {{ macros.small_text_button(id="learn-more-button", text="More Info") }}
+    </div>
+    <div class="mb-4">
+      {{ macros.select_field(form.login_type, initial="magic") }}
+    </div>
+
+    {{ macros.submit_field(form.submit) }}
+    {{ macros.action_button("Clear", "red", "clear-button", type="reset") }}
+  </form>
+  {% call macros.modal('loginexplanation') %}
+    {% call macros.modal_body('Passwordless Authentication') %}
+      This site uses a form of authentication that does not require passwords.
+      You receive an email that will allow you to authenticate. You can choose between
+      receiving a "Magic" Link which will log you in with a single click, or
+      getting a code to enter. Both the code and the link can only be used to login once
+      and expire after 5 minutes.
+    {% endcall %}
+  {% endcall %}
+{% endblock %}
+
+{% block script %}
+  {{ macros.modal_script('loginexplanation') }}
+  <script>
+    document.getElementById('learn-more-button').onclick = openModalLoginexplanation;
+    document.getElementById('email').onchange = function () {
+      document.getElementById('error').style.display = 'none';
+    };
+  </script>
+{% endblock script %}

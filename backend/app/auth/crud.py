@@ -11,13 +11,14 @@ logger = logging.getLogger()
 
 
 async def get_user_by_email(email: str) -> Optional[models.UserInDB]:
-    user = await db.users.find_one({"email": email})
+    user = await db.users.find_one({"email": email.lower()})
     if not user:
         return None
     return models.UserInDB.parse_obj(user)
 
 
 async def create_user(user: models.UserInDB) -> models.UserInDB:
+    user.email = user.email.lower()
     result = await db.users.insert_one(
         user.dict(exclude={"password", "_id"}, skip_defaults=True)
     )
@@ -36,11 +37,11 @@ async def get_all_users() -> motor_asyncio.AsyncIOMotorCursor:
 async def update_user_by_email(
     email: str, updated: models.UserWithRole
 ) -> models.UserInDB:
-    current = await db.users.find_one({"email": email})
+    current = await db.users.find_one({"email": email.lower()})
     _id = current["_id"]
     await db.users.replace_one({"_id": _id}, updated.dict(exclude={"password", "_id"}))
     return await db.users.find_one({"_id": _id})
 
 
 async def delete_user_by_email(email: str):
-    return await db.users.delete_one({"email": email})
+    return await db.users.delete_one({"email": email.lower()})

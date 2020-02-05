@@ -1,0 +1,31 @@
+{% import "macros.html" as macros %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {% block title %}
+    <title>Sheet Music Database</title>
+  {% endblock title %}
+  <link rel="stylesheet" href="{{ url_for('static', path='/main.css') }}">
+  {% block styles %}
+  {% endblock styles %}
+</head>
+<body>
+<header>
+  <nav id="main-nav" class="bg-green-300 border-green-700 border-b py-1 px-3 md:px-4 text-green-900">
+    <div class="text-xl font-bold pr-2">Sheet Music Database</div>
+  </nav>
+</header>
+<main id="main-body" class="container px-5 sm:mx-auto">
+  {% block body %}
+
+  {% endblock body %}
+</main>
+{% block script %}
+
+{% endblock script %}
+</body>
+</html>

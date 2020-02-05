@@ -3,16 +3,20 @@ import logging
 import os
 from typing import List
 
-from fastapi import APIRouter, Depends, Body, HTTPException
+from fastapi import APIRouter, Depends, Body, HTTPException, Form, Query
+from starlette.requests import Request
 from starlette.responses import UJSONResponse
 from starlette.status import (
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
+    HTTP_404_NOT_FOUND,
 )
 
 from app.auth import models, security, crud
+from app.auth.forms import RequestLoginForm
 from app.auth.security import oauth2_scheme
+from app.dependencies import send_email, templates
 
 auth_router = APIRouter()
 
@@ -30,6 +34,83 @@ from_name = os.getenv("MAILGUN_FROM_NAME")
 from_address = os.getenv("MAILGUN_FROM_ADDRESS")
 
 
+@auth_router.get("/login")
+async def login(request: Request, next_location: str = Query(None, alias="next")):
+    form = RequestLoginForm(meta={"csrf_context": request.session})
+    return templates.TemplateResponse(
+        "auth/login.html",
+        {"request": request, "next_location": next_location, "form": form},
+    )
+
+
+@auth_router.post("/login")
+async def login_post(
+    request: Request,
+    # email: str = Form(...),
+    # login_type: str = Form(...),
+    next_location: str = Query(None, alias="next"),
+):
+    form = RequestLoginForm(
+        await request.form(), meta={"csrf_context": request.session}
+    )
+    if not form.validate():
+        return templates.TemplateResponse(
+            "auth/login.html", {"request": request, "form": form}
+        )
+    email = form.email.data
+    login_type = form.login_type.data
+    user = await crud.get_user_by_email(email)
+    if not user:
+        form.email.errors.append("Could not find user with this email.")
+        return templates.TemplateResponse(
+            "auth/login.html", {"request": request, "form": form},
+        )
+    if user.disabled:
+        form.email.errors.append("This user is disabled.")
+        return templates.TemplateResponse(
+            "auth/login.html", {"request": request, "form": form},
+        )
+    if login_type == "code":
+        await send_otp(email)
+        return templates.TemplateResponse(
+            "auth/submit-code.html",
+            {"request": request, "email": email, "next_location": next_location},
+        )
+    elif login_type == "magic":
+        await send_magic(email, next_location, "/auth/magic")
+        response = templates.TemplateResponse(
+            "auth/magic-sent.html", {"request": request}
+        )
+        response.set_cookie("magic_email", email, httponly=True, secure=secure_cookies)
+        return response
+    return templates.TemplateResponse(
+        "auth/login.html",
+        {"request": request, "form": form, "error": "Something has gone wrong."},
+    )
+
+
+async def send_otp(email):
+    otp = security.generate_otp(email)
+    await send_email(
+        email,
+        "Your One Time Password",
+        f"Your password is {otp}",
+        from_address,
+        from_name,
+    )
+
+
+async def send_magic(email, next_location, location):
+    magic_link = security.generate_magic_link(email, next_location, location)
+    await send_email(
+        email,
+        "Your magic sign in link",
+        f"Click this link to sign in\n{magic_link}",
+        from_address,
+        from_name,
+    )
+
+
 @auth_router.post("/request")
 async def request_login(data: models.AuthRequest = Body(...)):
     user = await crud.get_user_by_email(data.email)
@@ -41,14 +122,7 @@ async def request_login(data: models.AuthRequest = Body(...)):
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED, detail="This user is disabled."
         )
-    otp = security.generate_otp(data.email)
-    await send_email(
-        data.email,
-        "Your One Time Password",
-        f"Your password is {otp}",
-        from_address,
-        from_name,
-    )
+    await send_otp(data.email)
     return "Please check your email for a single use password."
 
 
@@ -63,14 +137,7 @@ async def request_magic(data: models.AuthRequest = Body(...)):
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED, detail="This user is disabled."
         )
-    magic_link = security.generate_magic_link(data.email, data.next)
-    await send_email(
-        data.email,
-        "Your magic sign in link",
-        f"Click this link to sign in\n{magic_link}",
-        from_address,
-        from_name,
-    )
+    await send_magic(data.email, data.next, location="/api/login")
     return "Please check your email for your sign in link."
 
 

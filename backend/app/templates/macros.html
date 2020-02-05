@@ -1,0 +1,237 @@
+{% macro modal(name, actions=False) %}
+  {% if actions %}
+    {% set padding = "pl-4 pt-4 pr-2 pb-2" %}
+  {% else %}
+    {% set padding = "pl-4 py-4 pr-2" %}
+  {% endif %}
+  <div
+      class="fixed inset-0 z-50 overflow-hidden bg-smoke-lighter md:bg-smoke-light flex hidden"
+      id="modal-wrapper-{{ name }}">
+    <div
+        class="h-1/2 bottom-0 fixed md:relative md:h-auto {{ padding }} md:rounded bg-white w-full md:max-w-md md:m-auto flex-col flex shadow"
+        id="modal-{{ name }}">
+      <span class="absolute top-0 right-0 p-2 text-red-800" id="close-modal-{{ name }}">
+        <svg class="h-6 w-6 fill-current text-grey hover:text-grey-darkest"
+             role="button"
+             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+        >
+          <title>Close</title>
+          <path
+              d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z">
+          </path>
+        </svg>
+      </span>
+      {{ caller() }}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro modal_script(name) %}
+  {% set modalWrapperEl = '$modalWrapper' + name | capitalize %}
+  {% set modalEl = '$modal' + name | capitalize %}
+  {% set closeButton = '$close' + name | capitalize + 'Button' %}
+  {% set openModalFunc = 'openModal' + name | capitalize %}
+  {% set closeModalFunc = 'closeModal' + name | capitalize %}
+  <script>
+    var {{ modalWrapperEl }} =
+    document.getElementById('modal-wrapper-{{ name }}');
+    var {{ closeButton }} =
+    document.getElementById('close-modal-{{ name }}');
+    var {{ modalEl }} =
+    document.getElementById('modal-{{ name }}');
+
+    function close{{ name | capitalize }}OnEscape(event) {
+      if (event.key === 'Escape') {
+        {{ closeModalFunc }}();
+      }
+    }
+
+    function {{ openModalFunc }}() {
+      {{ modalWrapperEl }}.
+      classList.remove('hidden');
+      document.addEventListener('keyup', close{{ name|capitalize }}OnEscape);
+    }
+
+    function {{ closeModalFunc }}() {
+      {{ modalWrapperEl }}.
+      classList.add('hidden');
+      document.removeEventListener('keyup', close{{ name|capitalize }}OnEscape);
+    }
+
+    {{ closeButton }}.onclick = {{ closeModalFunc }};
+    {{ modalWrapperEl }}.onclick = function (event) {
+      if (event.target === event.currentTarget) {
+        {{ closeModalFunc }}();
+      }
+    };
+    swipeDetect({{ modalWrapperEl }}, function (swipeDir) {
+      if (swipeDir === 'down' && width <= 768) {
+        {{ closeModalFunc }}();
+      }
+    });
+  </script>
+{% endmacro %}
+
+{% macro modal_body(title) %}
+  <h1 class="text-lg text-blue-700 font-bold">{{ title }}</h1>
+  <p class="text-gray-900">{{ caller() }}</p>
+{% endmacro %}
+
+{% macro modal_actions() %}
+  <div class="flex flex-row ml-auto mt-4">
+    {{ caller() }}
+  </div>
+{% endmacro %}
+
+{% macro action_button(text, color, id, type=None, tall=False, wide=False) %}
+  {% set paddingY = 'py-1' %}
+  {% set paddingX = 'px-4' %}
+  {% if tall %}
+    {% set paddingY = 'py-2' %}
+  {% endif %}
+  {% if wide %}
+    {% set paddingX = 'px-12 w-full md:w-auto' %}
+  {% endif  %}
+  <button
+      {{ {'type': type, 'id': id}|xmlattr }}
+      {#      possible generated classes class="bg-red-100 bg-blue-100 bg-green-100 bg-yellow-100 bg-orange-100" #}
+      {#      possible generated classes class="hover:bg-red-200 hover:bg-blue-200 hover:bg-green-200 hover:bg-yellow-200 hover:bg-orange-200" #}
+      {#      possible generated classes class="text-red-800 text-blue-800 text-green-800 text-yellow-800 text-orange-800" #}
+      {#      possible generated classes class="border-red-800 border-blue-800 border-green-800 border-yellow-800 border-orange-800" #}
+      class="bg-{{ color }}-100 text-{{ color }}-800 border-b-2 border-{{ color }}-800 font-bold {{ paddingX }} {{ paddingY }} hover:bg-{{ color }}-200"
+  >
+    {{ text }}
+  </button>
+{% endmacro %}
+
+{% macro action_link(text, color, to, id=None, type=None, tall=False) %}
+  {% set padding = 'py-1 px-4' %}
+  {% if tall %}
+    {% set padding = 'py-2 px-4' %}
+  {% endif %}
+  <a
+      {{ {'type': type, 'id': id, 'href': to}|xmlattr }}
+      class="bg-{{ color }}-100 text-{{ color }}-800 border-b-2 border-{{ color }}-800 font-bold {{ padding }} hover:bg-{{ color }}-200 flex-none"
+  >
+    {{ text }}
+  </a>
+{% endmacro %}
+
+{% macro small_action_link(text, color, to) %}
+  <a
+      {{ {'href': to}|xmlattr }}
+      class="bg-{{ color }}-100 text-{{ color }}-800 border-b-2 border-{{ color }}-800 font-bold px-3 py-1 text-sm hover:bg-{{ color }}-200 flex-none"
+  >
+    {{ text }}
+  </a>
+{% endmacro %}
+
+{% macro small_text_button(text, id) %}
+  <button
+      class="text-sm text-gray-600 hove:text-gray-800 hover:underline"
+      id="{{ id }}"
+      type="button"
+  >
+    {{ text }}
+  </button>
+{% endmacro %}
+
+{% macro action_button(text, color, id, type=None, tall=False, wide=False) %}
+  {% set paddingY = 'py-1' %}
+  {% set paddingX = 'px-4' %}
+  {% if tall %}
+    {% set paddingY = 'py-2' %}
+  {% endif %}
+  {% if wide %}
+    {% set paddingX = 'px-12 w-full md:w-auto' %}
+  {% endif  %}
+  <button
+      {{ {'type': type, 'id': id}|xmlattr }}
+      {#      possible generated classes class="bg-red-100 bg-blue-100 bg-green-100 bg-yellow-100 bg-orange-100" #}
+      {#      possible generated classes class="hover:bg-red-200 hover:bg-blue-200 hover:bg-green-200 hover:bg-yellow-200 hover:bg-orange-200" #}
+      {#      possible generated classes class="text-red-800 text-blue-800 text-green-800 text-yellow-800 text-orange-800" #}
+      {#      possible generated classes class="border-red-800 border-blue-800 border-green-800 border-yellow-800 border-orange-800" #}
+      class="bg-{{ color }}-100 text-{{ color }}-800 border-b-2 border-{{ color }}-800 font-bold {{ paddingX }} {{ paddingY }} hover:bg-{{ color }}-200"
+  >
+    {{ text }}
+  </button>
+{% endmacro %}
+
+{% macro label(text, for) %}
+  <label for="{{ for }}"
+         class="text-green-700 font-bold leading-tight align-middle pr-2"
+  >{{ text }}</label>
+{% endmacro  %}
+
+{% macro form_control() %}
+  <div class="border-b border-green-300 py-2 w-full hover:border-green-700 focus-within:border-green-700">
+  {{ caller() }}
+  </div>
+{% endmacro %}
+
+{% macro text_input(name, id, type="text", value="", placeholder="") %}
+  <input type="{{ type }}" name="{{ name }}" id="{{ id }}"
+         class="font-sans appearance-none bg-transparent w-full text-gray-900 leading-tight align-middle focus:outline-none">
+{% endmacro %}
+
+{% macro text_input(field, margin_bottom=True) %}
+  {% set color = 'green' %}
+  {% if field.errors %}
+    {% set color = 'red' %}
+  {% endif %}
+  <div class="{% if margin_bottom %}mb-4{% else %}mb-0{% endif %}">
+    <div
+        {#        possible generated classes class="border-red-300 border-green-300 text-red-700 text-green-700 hover:border-green-700 hover:border-red-700" #}
+        class="border-b border-b-2 border-{{ color }}-300 py-2 w-full hover:border-{{ color }}-700 form-control">
+      {{ field.label(class=("text-" + color + "-700 font-bold leading-tight align-middle pr-2")) }}
+      {{ field(class="font-sans appearance-none bg-transparent w-full text-gray-700 leading-tight align-middle focus:outline-none") }}
+    </div>
+    {% if field.errors %}
+      <ul class="text-red-500 text-xs italic list-none mt-1">
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+
+{% macro select_field(field, initial=None) %}
+  {% set color = 'green' %}
+  {% if field.errors %}
+    {% set color = 'red' %}
+  {% endif %}
+  {{ field.label(class=("text-" + color + "-700 font-bold leading-tight align-middle pr-2 ")) }}
+  <div class="inline-block relative w-full">
+    <select id="{{ field.name }}" name="{{ field.name }}"
+        {#            possible generated classes class="border-green-300 border-red-300" #}
+            class="block appearance-none w-full bg-white border-b border-b-2 border-{{ color }}-300 hover:border-green-700 focus:border-green-800 focus:outline-none pl-0 py-2 pr-8 leading-tight">
+      {% for option in field.choices %}
+        <option value="{{ option[0] }}"
+                {% if option[0] == initial %}selected{% endif %}
+        >{{ option[1] }}</option>
+      {% endfor %}
+    </select>
+    <div
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+      <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 20 20">
+        <path
+            d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z">
+        </path>
+      </svg>
+    </div>
+    {% if field.errors %}
+      <ul class="text-red-500 text-xs italic list-none mt-1">
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro submit_field(field) %}
+  {{ action_button(field.label.text, color='green', id='submit', type='submit', tall=False) }}
+{% endmacro %}

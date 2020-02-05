@@ -1,15 +1,23 @@
+import datetime
 import os
+from pathlib import Path
 from typing import Optional
 from urllib.parse import quote_plus
 
 import aiohttp
+import wtforms
 from fastapi import HTTPException
 from motor import motor_asyncio
+from starlette.templating import Jinja2Templates
+from wtforms.csrf.session import SessionCSRF
 
 DB_NAME = os.getenv("DB_NAME", "app")
 db_uri = os.getenv("MONGODB_URI", False)
 db = None
 
+HERE = Path(__file__).parent
+
+templates = Jinja2Templates(directory=str(HERE / "templates"))
 
 mailgun_enpoint = os.getenv("MAILGUN_ENDPOINT")
 mailgun_key = os.getenv("MAILGUN_KEY")
@@ -57,3 +65,11 @@ async def send_email(
         )
         if res.status != 200:
             raise HTTPException(status_code=500, detail="Could not send email.")
+
+
+class CSRFForm(wtforms.Form):
+    class Meta:
+        csrf = True
+        csrf_class = SessionCSRF
+        csrf_secret = os.getenv("SECRET_KEY").encode("utf-8")
+        csrf_time_limit = datetime.timedelta(minutes=20)
