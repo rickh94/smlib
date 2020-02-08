@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Schema
+from pydantic import BaseModel, EmailStr, Field
 
 
 class AuthRole(Enum):
@@ -10,11 +10,11 @@ class AuthRole(Enum):
 
 
 class User(BaseModel):
-    email: EmailStr = Schema(
+    email: EmailStr = Field(
         ..., title="Email", description="An email to be used for signing in."
     )
-    full_name: Optional[str] = Schema(None, title="Full Name")
-    disabled: Optional[bool] = Schema(
+    full_name: Optional[str] = Field(None, title="Full Name")
+    disabled: Optional[bool] = Field(
         False,
         title="Disabled",
         description="Whether a user's account has been disabled",
@@ -37,17 +37,17 @@ class UserInDB(UserWithRole):
 
 
 class OTP(BaseModel):
-    email: EmailStr = Schema(..., title="Email")
-    code: str = Schema(
+    email: EmailStr = Field(..., title="Email")
+    code: str = Field(
         ..., title="One Time Password", description="Single use login code"
     )
 
 
 class Magic(BaseModel):
-    email: EmailStr = Schema(..., title="Email")
-    secret: str = Schema(..., title="Secret from magic link url.")
+    email: EmailStr = Field(..., title="Email")
+    secret: str = Field(..., title="Secret from magic link url.")
 
 
 class AuthRequest(BaseModel):
-    email: EmailStr = Schema(..., title="Email", description="Email of registered user")
-    next: str = Schema(None, title="Next", description="Next url to redirect to")
+    email: EmailStr = Field(..., title="Email", description="Email of registered user")
+    next: str = Field(None, title="Next", description="Next url to redirect to")

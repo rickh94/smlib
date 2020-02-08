@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block body %}
+  <form action="/sheets/create" class="w-full md:max-w-md mx-auto" method="post" enctype="multipart/form-data">
+  {{ form.csrf_token }}
+  <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">Create New Sheet</h1>
+  {{ macros.text_input(form.piece) }}
+  {{ macros.text_input(form.composers) }}
+  {{ macros.text_input(form.genre) }}
+  {{ macros.text_input(form.tags) }}
+  {{ macros.text_input(form.instruments) }}
+  {{ macros.text_input(form.type) }}
+    <div class="mb-2">
+      {{ form.sheet_file.label() }}
+      {{ form.sheet_file() }}
+    </div>
+  {{ macros.submit_field(form.submit) }}
+  </form>
+{% endblock %}
