@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+  <form action="/auth/magic" class="w-full md:max-w-md mx-auto" method="post">
+{#    {{ form.csrf_token }}#}
+    {{ form.secret(value=secret) }}
+    {{ macros.text_input(form.email, margin_bottom=True) }}
+    {{ macros.submit_field(form.submit) }}
+    {{ macros.action_button("Clear", "red", "clear-button", type="reset") }}
+  </form>
+{% endblock %}

@@ -1,28 +1,19 @@
 {% extends "base.html" %}
 {% block body %}
   <form
-      action="/auth/code{% if next_location %}?next={{ next_location }}{% endif %}"
-      class="w-full md:max-w-md mx-auto">
+      action="/auth/code"
+      class="w-full md:max-w-md mx-auto"
+      method="post"
+  >
     <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">Submit Login Code</h1>
     <p class="text-md text-gray-800 pt-2">Please check your email for a one-time code
       and enter it below.</p>
-    {% if email %}
-      <input type="hidden" name="email" value="{{ email }}">
-    {% else %}
-      <div class="mb-0">
-        {% call macros.form_control() %}
-          {{ macros.label("Email", "email") }}
-          {{ macros.text_input("email", "email", "email") }}
-        {% endcall %}
-      </div>
-    {% endif %}
+    {{ form.csrf_token }}
+    {{ form.email(value=email) }}
     <div class="mb-4">
-      {% call macros.form_control() %}
-        {{ macros.label("Code", "code") }}
-        {{ macros.text_input("code", "code", placeholder="123456") }}
-      {% endcall %}
+      {{ macros.text_input(form.code, margin_bottom=True) }}
     </div>
-    {{ macros.action_button("Submit", "green", "submit-button", type="submit") }}
+    {{ macros.submit_field(form.submit) }}
     {{ macros.action_button("Clear", "red", "clear-button", type="reset") }}
   </form>
 {% endblock body %}

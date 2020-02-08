@@ -2,10 +2,11 @@ import datetime
 import logging
 import os
 from typing import List
+import urllib.parse
 
 from fastapi import APIRouter, Depends, Body, HTTPException, Form, Query
 from starlette.requests import Request
-from starlette.responses import UJSONResponse
+from starlette.responses import UJSONResponse, RedirectResponse
 from starlette.status import (
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
@@ -14,7 +15,7 @@ from starlette.status import (
 )
 
 from app.auth import models, security, crud
-from app.auth.forms import RequestLoginForm
+from app.auth.forms import RequestLoginForm, SubmitCodeForm, EnterEmailForm
 from app.auth.security import oauth2_scheme
 from app.dependencies import send_email, templates
 
@@ -35,27 +36,35 @@ from_address = os.getenv("MAILGUN_FROM_ADDRESS")
 
 
 @auth_router.get("/login")
-async def login(request: Request, next_location: str = Query(None, alias="next")):
+async def login(
+    request: Request,
+    next_location: str = Query(None, alias="next"),
+    error: str = Query(None),
+):
     form = RequestLoginForm(meta={"csrf_context": request.session})
     return templates.TemplateResponse(
         "auth/login.html",
-        {"request": request, "next_location": next_location, "form": form},
+        {
+            "request": request,
+            "next_location": next_location,
+            "form": form,
+            "error": error,
+        },
     )
 
 
 @auth_router.post("/login")
 async def login_post(
     request: Request,
-    # email: str = Form(...),
-    # login_type: str = Form(...),
     next_location: str = Query(None, alias="next"),
+    error: str = Query(None),
 ):
     form = RequestLoginForm(
         await request.form(), meta={"csrf_context": request.session}
     )
     if not form.validate():
         return templates.TemplateResponse(
-            "auth/login.html", {"request": request, "form": form}
+            "auth/login.html", {"request": request, "form": form, "error": error}
         )
     email = form.email.data
     login_type = form.login_type.data
@@ -72,9 +81,15 @@ async def login_post(
         )
     if login_type == "code":
         await send_otp(email)
+        code_form = SubmitCodeForm(meta={"csrf_context": request.session})
         return templates.TemplateResponse(
             "auth/submit-code.html",
-            {"request": request, "email": email, "next_location": next_location},
+            {
+                "request": request,
+                "email": email,
+                "next_location": next_location,
+                "form": code_form,
+            },
         )
     elif login_type == "magic":
         await send_magic(email, next_location, "/auth/magic")
@@ -85,8 +100,78 @@ async def login_post(
         return response
     return templates.TemplateResponse(
         "auth/login.html",
-        {"request": request, "form": form, "error": "Something has gone wrong."},
+        {
+            "request": request,
+            "form": form,
+            "error": error or "Something has gone wrong.",
+        },
     )
+
+
+@auth_router.post("/code")
+async def submit_code(
+    request: Request, next_location: str = Query(None, alias="next"),
+):
+    code_form = SubmitCodeForm(
+        await request.form(), meta={"csrf_context": request.session}
+    )
+    if not code_form.email.data:
+        error_message = urllib.parse.quote_plus("No email found. Please log in again.")
+        return RedirectResponse(url=f"/auth/login?error={error_message}")
+    if not code_form.validate():
+        return templates.TemplateResponse(
+            "auth/submit-code.html",
+            {
+                "request": request,
+                "email": code_form.email.data,
+                "next_location": next_location,
+                "form": code_form,
+            },
+        )
+    user = await security.authenticate_user(code_form.email.data, code_form.code.data)
+    if not user or user.disabled:
+        return "Could not log in"
+    response = templates.TemplateResponse(
+        "auth/login-successful.html", {"request": request}
+    )
+    return add_login_cookie(response, user)
+
+
+@auth_router.get("/magic")
+async def confirm_magic(
+    request: Request,
+    secret: str = Query(None),
+    next_location: str = Query("/", alias="next"),
+):
+    form = EnterEmailForm(meta={"csrf_context": request.session})
+    email = request.cookies.get("magic_email")
+    if not secret:
+        return "Something has gone wrong."
+    if not email:
+        return templates.TemplateResponse(
+            "auth/magic-enter-email.html",
+            {"request": request, "secret": secret, "form": form},
+        )
+    user = await security.authenticate_user_magic(email, secret)
+    if not user or user.disabled:
+        return "Could not log in"
+    response = RedirectResponse(url=next_location)
+    return add_login_cookie(response, user)
+
+
+@auth_router.post("/magic")
+async def confirm_magic_form(request: Request):
+    form = EnterEmailForm(await request.form(), meta={"csrf_context": request.session})
+    if not form.validate():
+        error_message = urllib.parse.quote_plus("Login Link failed. Please try again.")
+        return RedirectResponse(url=f"/auth/login?error={error_message}")
+    user = await security.authenticate_user_magic(form.email.data, form.secret.data)
+    if not user or user.disabled:
+        return "Could not log in"
+    response = templates.TemplateResponse(
+        "auth/login-successful.html", {"request": request}
+    )
+    return add_login_cookie(response, user)
 
 
 async def send_otp(email):
@@ -146,11 +231,15 @@ async def verify_magic(data: models.Magic = Body(...)):
     user = await security.authenticate_user_magic(data.email, data.secret)
     if not user:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Invalid Link")
+    response = UJSONResponse({"status": "authenticated"})
+    return add_login_cookie(response, user)
+
+
+def add_login_cookie(response, user):
     access_token_expires = datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
-    response = UJSONResponse({"status": "authenticated"})
     response.set_cookie(
         oauth2_scheme.token_name, access_token, httponly=True, secure=secure_cookies
     )
@@ -165,15 +254,8 @@ async def confirm_login(data: models.OTP = Body(...)):
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST, detail="Invalid Email or Code"
         )
-    access_token_expires = datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = security.create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
     response = UJSONResponse({"status": "authenticated"})
-    response.set_cookie(
-        oauth2_scheme.token_name, access_token, httponly=True, secure=secure_cookies
-    )
-    return response
+    return add_login_cookie(response, user)
 
 
 @auth_router.post(
