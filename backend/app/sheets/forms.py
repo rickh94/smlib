@@ -2,7 +2,7 @@ import wtforms
 from wtforms.validators import InputRequired, Optional
 
 from app.dependencies import CSRFForm
-from app.sheets.models import SheetIn
+from app.sheets.models import Sheet
 
 
 def form_field_from_model(
@@ -56,13 +56,11 @@ class ListField(wtforms.Field):
 
 
 class SheetForm(CSRFForm):
-    piece = form_field_from_model(SheetIn, "piece")
-    composers = form_field_from_model(
-        SheetIn, "composers", field_class=ComposerListField
-    )
-    genre = form_field_from_model(SheetIn, "genre")
-    tags = form_field_from_model(SheetIn, "tags", field_class=ListField)
-    instruments = form_field_from_model(SheetIn, "instruments", field_class=ListField)
-    type = form_field_from_model(SheetIn, "type")
+    piece = form_field_from_model(Sheet, "piece")
+    composers = form_field_from_model(Sheet, "composers", field_class=ComposerListField)
+    genre = form_field_from_model(Sheet, "genre")
+    tags = form_field_from_model(Sheet, "tags", field_class=ListField)
+    instruments = form_field_from_model(Sheet, "instruments", field_class=ListField)
+    type = form_field_from_model(Sheet, "type")
     sheet_file = wtforms.FileField("Sheet File", validators=[InputRequired()])
     submit = wtforms.SubmitField()

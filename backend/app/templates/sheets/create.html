@@ -1,18 +1,32 @@
 {% extends "base.html" %}
 {% block body %}
-  <form action="/sheets/create" class="w-full md:max-w-md mx-auto" method="post" enctype="multipart/form-data">
-  {{ form.csrf_token }}
-  <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">Create New Sheet</h1>
-  {{ macros.text_input(form.piece) }}
-  {{ macros.text_input(form.composers) }}
-  {{ macros.text_input(form.genre) }}
-  {{ macros.text_input(form.tags) }}
-  {{ macros.text_input(form.instruments) }}
-  {{ macros.text_input(form.type) }}
-    <div class="mb-2">
-      {{ form.sheet_file.label() }}
-      {{ form.sheet_file() }}
+  <form action="/sheets/create" class="w-full md:max-w-xl mx-auto" method="post"
+        enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">Create New Sheet</h1>
+    {{ macros.text_input(form.piece, margin_bottom=False) }}
+    {{ macros.text_input(form.composers, margin_bottom=False) }}
+    {{ macros.text_input(form.genre, margin_bottom=False) }}
+    {{ macros.text_input(form.tags, margin_bottom=False) }}
+    {{ macros.text_input(form.instruments, margin_bottom=False) }}
+    {{ macros.text_input(form.type) }}
+    <div class="mb-4">
+      {{ form.sheet_file.label(class="text-green-700 font-bold leading-tight align-middle") }}
+      {{ form.sheet_file(class="mt-1 font-sans appearance-none bg-transparent w-full text-gray-800 leading-tight align-middle focus:outline-none") }}
     </div>
-  {{ macros.submit_field(form.submit) }}
+    {{ macros.submit_field(form.submit) }}
   </form>
+{% endblock %}
+
+{% block script %}
+  <script>
+    function toggleDescription(descriptionID) {
+      const $description = document.getElementById(descriptionID);
+      if ($description.style.display === 'none') {
+        $description.style.display = 'block';
+      } else {
+        $description.style.display = 'none';
+      }
+    }
+  </script>
 {% endblock %}

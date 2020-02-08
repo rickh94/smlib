@@ -49,8 +49,6 @@ services:
     image: minio/minio
     volumes:
       - minio-data:/data
-    ports:
-      - "9000:9000"
     env_file:
       - .env
     command: server /data

@@ -7,9 +7,18 @@ from urllib.parse import quote_plus
 import aiohttp
 import wtforms
 from fastapi import HTTPException
+from minio import Minio
 from motor import motor_asyncio
 from starlette.templating import Jinja2Templates
 from wtforms.csrf.session import SessionCSRF
+
+minio_client = Minio(
+    os.getenv("MINIO_HOST"),
+    access_key=os.getenv("MINIO_ACCESS_KEY"),
+    secret_key=os.getenv("MINIO_SECRET_KEY"),
+    secure=(not os.getenv("DEBUG")),
+)
+
 
 DB_NAME = os.getenv("DB_NAME", "app")
 db_uri = os.getenv("MONGODB_URI", False)

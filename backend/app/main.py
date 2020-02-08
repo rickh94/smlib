@@ -2,6 +2,7 @@ import logging
 import os
 import urllib.parse
 
+import minio
 from fastapi import FastAPI, Depends, HTTPException
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
@@ -12,7 +13,7 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 from app.auth.models import UserInDB
 from app.auth.router import auth_router
 from app.auth.security import get_current_active_user
-from app.dependencies import db, HERE, templates
+from app.dependencies import db, HERE, templates, minio_client
 from app.sheets.router import sheet_router
 
 app = FastAPI(title="Sheet Music Database", version="20.02.0")
@@ -28,6 +29,16 @@ async def setup_db():
     await db.sheets.create_index("owner_email")
     await db.sheets.create_index("instruments")
     await db.sheets.create_index("composers")
+    await db.sheets.create_index("sheet_id", unique=True)
+
+
+@app.on_event("startup")
+def ensure_bucket():
+    try:
+        if not minio_client.bucket_exists(os.getenv("MINIO_BUCKET_NAME")):
+            minio_client.make_bucket(os.getenv("MINIO_BUCKET_NAME"))
+    except minio.ResponseError:
+        minio_client.make_bucket(os.getenv("MINIO_BUCKET_NAME"))
 
 
 @app.get("/")
@@ -54,7 +65,6 @@ async def redirect_unauthorized(request: Request, call_next):
     logger.debug("entering unauthorized middleware")
     response = await call_next(request)
     if response.status_code == HTTP_401_UNAUTHORIZED:
-        logger.debug(type(request.url.path))
         next_location = urllib.parse.quote_plus(request.url.path)
         error = urllib.parse.quote_plus("Please Log In to access that page.")
         url = f"/auth/login?error={error}&next={next_location}"
