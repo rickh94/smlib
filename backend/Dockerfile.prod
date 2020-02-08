@@ -4,4 +4,4 @@ ADD ./app /app/app
 VOLUME /socks
 WORKDIR /app
 COPY ./manage.py /app
-CMD uvicorn --uds /socks/smdb.sock app.main:app
+CMD uvicorn --uds /socks/smlib.sock app.main:app
