@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="mt-2 md:max-w-2xl text-lg">
+    <h6 class="font-bold text-gray-600">Composer</h6>
+    <p class="text-black">{{ sheet.composers | comma_truncate_list(0) }}</p>
+    <h6 class="font-bold text-gray-600 mt-2">Piece</h6>
+    <p class="text-black">{{ sheet.piece }}</p>
+    <h6 class="font-bold text-gray-600 mt-2">Genre</h6>
+    <p class="text-black">{{ sheet.genre or "" }}</p>
+    <h6 class="font-bold text-gray-600 mt-2">Instruments</h6>
+    <p class="text-black">{{ sheet.instruments | comma_truncate_list(0) }}</p>
+    <h6 class="font-bold text-gray-600 mt-2">Tags</h6>
+    <p class="text-black">{{ sheet.tags | comma_truncate_list(0) }}</p>
+    <h6 class="font-bold text-gray-600 mt-2">Type</h6>
+    <p class="text-black">{{ sheet.type or "" }}</p>
+    <p class="text-gray-700 mt-4">
+      <a href="/sheets/download/{{ sheet.sheet_id }}"
+         class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
+        <i class="fas fa-file-download inline-block pr-1"></i>
+        Download
+      </a>
+    </p>
+    <div class="flex flex-col md:flex-row mt-4 flex-wrap">
+      {% if piece_related %}
+        <div class="w-full md:max-w-sm p-2 text-sm">
+          <h5 class="font-bold text-gray-700">Other Sheets from this Piece</h5>
+          {% for sheet in piece_related %}
+            {% include "sheets/_sheet-card.html" %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock body %}

@@ -28,6 +28,7 @@ HERE = Path(__file__).parent
 
 templates = Jinja2Templates(directory=str(HERE / "templates"))
 
+
 mailgun_enpoint = os.getenv("MAILGUN_ENDPOINT")
 mailgun_key = os.getenv("MAILGUN_KEY")
 
@@ -82,3 +83,14 @@ class CSRFForm(wtforms.Form):
         csrf_class = SessionCSRF
         csrf_secret = os.getenv("SECRET_KEY").encode("utf-8")
         csrf_time_limit = datetime.timedelta(minutes=20)
+
+
+def comma_truncate_list(items: list, limit: int = 3):
+    if not items:
+        return ""
+    show_items = items[:limit] if limit > 0 else items
+    suffix = "..." if len(show_items) < len(items) else ""
+    return ", ".join(show_items) + suffix
+
+
+templates.env.filters["comma_truncate_list"] = comma_truncate_list

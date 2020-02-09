@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="md:max-w-6xl">
+    <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">All Sheets</h1>
+    <table class="hidden md:block table-fixed border-collapse w-full">
+      <thead>
+      <tr class="px-1 border-b-2 border-gray-800 text-gray-800 bg-gray-100 font-bold text-lg text-center">
+        <th class="pl-2 pr-2">Composer</th>
+        <th class="pr-2">Piece</th>
+        <th class="pr-2">Genre</th>
+        <th class="pr-2">Tags</th>
+        <th class="pr-2">Instruments</th>
+        <th class="pr-2">Type</th>
+        <th class="pr-2">Links</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for sheet in sheets %}
+        {% include "sheets/_sheet-row.html" %}
+      {% endfor %}
+      </tbody>
+    </table>
+    <main class="md:hidden block  w-full">
+      {% for sheet in sheets %}
+        {% include "sheets/_sheet-card.html" %}
+      {% endfor %}
+    </main>
+  </div>
+{% endblock body %}

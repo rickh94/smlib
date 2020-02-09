@@ -1,7 +1,8 @@
 import logging
+import os
 import uuid
 
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Query
 from starlette.requests import Request
 from starlette.responses import StreamingResponse
 
@@ -49,18 +50,17 @@ async def post_create_sheet(
     return "Something went wrong"
 
 
-@sheet_router.get("/download/{sheet_id}")
+@sheet_router.get("/{sheet_id}/download")
 async def download_sheet_by_id(
     sheet_id: str, current_user: UserInDB = Depends(get_current_active_user)
 ):
     sheet_id = uuid.UUID(sheet_id)
-    logger.debug(type(sheet_id))
     sheet = await crud.get_sheet_by_id(current_user.email, sheet_id)
     data = storage.get_sheet(sheet.sheet_id, sheet.owner_email, sheet.file_ext)
     filename = ""
     if sheet.type.lower() == "part" and sheet.instruments:
         filename = sheet.instruments[0].upper().replace(" ", "").replace(".", "") + "-"
-    elif sheet.type == "score":
+    elif sheet.type.lower() == "score":
         filename = "SCORE-"
     filename += sheet.composers[0].split(" ")[-1] + "-"
     filename += sheet.piece.replace(" ", "").replace(".", "")
@@ -68,4 +68,50 @@ async def download_sheet_by_id(
     return StreamingResponse(
         data.stream(32 * 1024),
         headers={"Content-Disposition": f"attachment; filename={filename}",},
+    )
+
+
+@sheet_router.get("/{sheet_id}")
+async def get_sheet_info(
+    request: Request,
+    sheet_id: str,
+    current_user: UserInDB = Depends(get_current_active_user),
+):
+    sheet_id = uuid.UUID(sheet_id)
+    sheet = await crud.get_sheet_by_id(current_user.email, sheet_id)
+    piece_related = await crud.get_piece_related(
+        current_user.email, sheet.piece, sheet.sheet_id, 3
+    )
+    return templates.TemplateResponse(
+        "sheets/single.html",
+        {"request": request, "sheet": sheet, "piece_related": piece_related},
+    )
+
+
+@sheet_router.get("")
+async def get_sheets(
+    request: Request,
+    current_user: UserInDB = Depends(get_current_active_user),
+    page: int = Query(1),
+    sort: str = Query("piece"),
+    direction: int = Query(1),
+):
+    limit = int(os.getenv("SHEETS_PER_PAGE", 20))
+    sheet_cursor = await crud.get_user_sheets(
+        current_user.email, page, sort, direction, limit
+    )
+    user_sheets = [models.SheetOut.parse_obj(sheet) async for sheet in sheet_cursor]
+    return templates.TemplateResponse(
+        "sheets/list.html",
+        {
+            "request": request,
+            "page": page,
+            "sort": sort,
+            "direction": direction,
+            "sheets": user_sheets,
+            "has_next": await crud.user_sheets_has_next(
+                current_user.email, page, limit
+            ),
+            "has_prev": page != 1,
+        },
     )

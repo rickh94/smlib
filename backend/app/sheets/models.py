@@ -38,7 +38,7 @@ class Sheet(BaseModel):
 
 class SheetWithVersions(Sheet):
     prev_versions: Optional[List[Tuple[UUID4, datetime.datetime]]] = Field(
-        ...,
+        None,
         title="Previous Versions",
         description="UUIDs of previous versions of this sheet.",
     )
@@ -60,6 +60,9 @@ class SheetInDB(Sheet):
             self.tags = None
         if len(self.instruments) == 1 and not self.instruments[0]:
             self.instruments = None
+
+    def clean_tags(self):
+        self.tags = [tag.lower() for tag in self.tags]
 
 
 class SheetOut(SheetWithVersions):

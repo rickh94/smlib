@@ -274,7 +274,7 @@ async def register(user: models.User = Body(...)):
 
 @auth_router.get("/logout")
 async def logout(
-    _current_user: models.UserInDB = Depends(security.get_current_active_user)
+    _current_user: models.UserInDB = Depends(security.get_current_active_user),
 ):
     response = RedirectResponse(url="/auth/login")
     response.set_cookie(oauth2_scheme.token_name, "", httponly=True)
