@@ -72,12 +72,12 @@ async def login_post(
     if not user:
         form.email.errors.append("Could not find user with this email.")
         return templates.TemplateResponse(
-            "auth/login.html", {"request": request, "form": form},
+            "auth/login.html", {"request": request, "form": form}
         )
     if user.disabled:
         form.email.errors.append("This user is disabled.")
         return templates.TemplateResponse(
-            "auth/login.html", {"request": request, "form": form},
+            "auth/login.html", {"request": request, "form": form}
         )
     if login_type == "code":
         await send_otp(email)
@@ -109,9 +109,7 @@ async def login_post(
 
 
 @auth_router.post("/code")
-async def submit_code(
-    request: Request, next_location: str = Query(None, alias="next"),
-):
+async def submit_code(request: Request, next_location: str = Query(None, alias="next")):
     code_form = SubmitCodeForm(
         await request.form(), meta={"csrf_context": request.session}
     )
@@ -272,6 +270,15 @@ async def register(user: models.User = Body(...)):
     new_user = models.UserInDB.parse_obj(user)
     created_user = await crud.create_user(new_user)
     return created_user
+
+
+@auth_router.get("/logout")
+async def logout(
+    _current_user: models.UserInDB = Depends(security.get_current_active_user)
+):
+    response = RedirectResponse(url="/auth/login")
+    response.set_cookie(oauth2_scheme.token_name, "", httponly=True)
+    return response
 
 
 @auth_router.get("/sign-out")
