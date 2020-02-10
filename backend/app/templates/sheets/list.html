@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 {% block body %}
-  <div class="md:max-w-6xl">
-    <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">All Sheets</h1>
-    <table class="hidden md:block table-fixed border-collapse w-full">
-      <thead>
-      <tr class="px-1 border-b-2 border-gray-800 text-gray-800 bg-gray-100 font-bold text-lg text-center">
-        <th class="pl-2 pr-2">Composer</th>
-        <th class="pr-2">Piece</th>
-        <th class="pr-2">Genre</th>
-        <th class="pr-2">Tags</th>
-        <th class="pr-2">Instruments</th>
-        <th class="pr-2">Type</th>
-        <th class="pr-2">Links</th>
+    <header>
+      <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">{{ title }}</h1>
+    </header>
+    <table class="hidden md:block border-collapse w-full p-0">
+      <thead class="w-full inline-block">
+      <tr class="border-b-2 border-gray-800 px-4 text-gray-800 font-bold text-lg block w-full">
+        <th class="w-2/12 inline-block text-left">Composer</th>
+        <th class="w-2/12 inline-block text-left">Piece</th>
+        <th class="w-1/12 inline-block text-left">Genre</th>
+        <th class="w-2/12 inline-block text-left">Tags</th>
+        <th class="w-2/12 inline-block text-left">Instruments</th>
+        <th class="w-1/12 inline-block text-left">Type</th>
+        <th class="w-1/12 inline-block text-right">Actions</th>
       </tr>
       </thead>
-      <tbody>
+      <tbody class="w-full inline-block">
       {% for sheet in sheets %}
         {% include "sheets/_sheet-row.html" %}
       {% endfor %}
@@ -25,5 +26,18 @@
         {% include "sheets/_sheet-card.html" %}
       {% endfor %}
     </main>
-  </div>
+    <footer class="w-full mt-4">
+      {% if prev_page %}
+        <a href="{{ prev_page }}"
+           class="p-2 mr-4 border-b border-gray-800 text-gray-800 bg-gray-200 font-bold hover:text-green-800 hover:bg-green-200 hover:border-green-800">
+          Previous
+        </a>
+      {% endif %}
+      {% if next_page %}
+        <a href="{{ next_page }}"
+           class="p-2 border-b border-gray-800 text-gray-800 bg-gray-200 font-bold hover:text-green-800 hover:bg-green-200 hover:border-green-800">
+          Next
+        </a>
+      {% endif %}
+    </footer>
 {% endblock body %}

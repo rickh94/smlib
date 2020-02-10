@@ -24,6 +24,8 @@
       {% if piece_related %}
         <div class="w-full md:max-w-sm p-2 text-sm">
           <h5 class="font-bold text-gray-700">Other Sheets from this Piece</h5>
+          <a href="/sheets/{{ sheet.sheet_id }}/related?field=piece"
+             class="p-1 border-b border-gray-700 hover:text-green-700 hover:border-green-700"></a>
           {% for sheet in piece_related %}
             {% include "sheets/_sheet-card.html" %}
           {% endfor %}

@@ -39,18 +39,41 @@ async def get_user_sheets(
 async def user_sheets_has_next(owner_email: str, page: int = 1, limit: int = 20):
     skip = limit * page
     count = await db.sheets.count_documents(
-        {"owner_email": owner_email}, limit=limit, skip=skip
+        {"owner_email": owner_email}, limit=1, skip=skip
+    )
+    return count > 0
+
+
+async def piece_related_has_next(sheet: models.Sheet, page: int = 1, limit: int = 20):
+    skip = limit * page
+    count = await db.sheets.count_documents(
+        {
+            "owner_email": sheet.owner_email,
+            "piece": sheet.piece,
+            "sheet_id": {"$ne": sheet.sheet_id},
+        },
+        limit=1,
+        skip=skip,
     )
     return count > 0
 
 
 async def get_piece_related(
-    owner_email: str, piece: str, sheet_id: uuid.UUID, limit: int = 3, page: int = 1
+    sheet: models.Sheet,
+    limit: int = 3,
+    page: int = 1,
+    sort: str = "piece",
+    direction: int = 1,
 ) -> List[models.SheetOut]:
     skip = limit * (page - 1)
     cursor = db.sheets.find(
-        {"owner_email": owner_email, "piece": piece, "sheet_id": {"$ne": sheet_id}},
+        {
+            "owner_email": sheet.owner_email,
+            "piece": sheet.piece,
+            "sheet_id": {"$ne": sheet.sheet_id},
+        },
         limit=limit,
         skip=skip,
+        sort=(sort, direction),
     )
     return [models.SheetOut.parse_obj(sheet) async for sheet in cursor]
