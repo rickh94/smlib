@@ -253,7 +253,7 @@
 {% endmacro %}
 
 {% macro table_header(text, field, sort_links, sort, direction, width) %}
-  <th class="w-{{ width }}/12 inline-block text-left">
+  <th class="w-{{ width }}/12 inline-block text-left mr-1">
     <a href="{{ sort_links.get(field) }}" class="w-full inline-block">
       {{ text }}
       {% if sort == field and direction == 1 %}
@@ -263,4 +263,19 @@
       {% endif %}
     </a>
   </th>
+{% endmacro %}
+
+{% macro related_list(field, info, sheet) %}
+  <div class="w-full md:max-w-sm p-2 text-sm ">
+    <header class="flex items-center flex-wrap">
+      <h5 class="font-bold text-gray-700 block">Other Sheets
+        from {{ 'these' if info['plural'] else 'this' }} {{ field | title }}</h5>
+      <a href="/sheets/{{ sheet.sheet_id }}/related?field={{ field }}"
+         class="ml-2 p-1 border-b border-gray-700 hover:text-green-700 hover:border-green-700"
+      >View All...</a>
+    </header>
+    {% for sheet in info['items'] %}
+      {% include "sheets/_sheet-card.html" %}
+    {% endfor %}
+  </div>
 {% endmacro %}

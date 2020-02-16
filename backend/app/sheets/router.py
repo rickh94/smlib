@@ -1,11 +1,12 @@
 import logging
 import os
+import string
 import uuid
 from collections import defaultdict
 
 from fastapi import APIRouter, Depends, UploadFile, File, Query
 from starlette.requests import Request
-from starlette.responses import StreamingResponse
+from starlette.responses import StreamingResponse, RedirectResponse
 
 from app.auth.models import UserInDB
 from app.auth.security import get_current_active_user
@@ -47,8 +48,16 @@ async def post_create_sheet(
             sheet_file, sheet.sheet_id, sheet.owner_email, sheet.file_ext
         )
         created_sheet = await crud.create_sheet(sheet)
-        return created_sheet
+        return templates.TemplateResponse(
+            "sheets/created.html",
+            {"request": request, "sheet_id": created_sheet.sheet_id},
+        )
     return "Something went wrong"
+
+
+def clean_for_filename(text: str):
+    allowed_chars = f"-_(){string.ascii_letters}{string.digits}"
+    return "".join(c for c in text if c in allowed_chars)
 
 
 @sheet_router.get("/{sheet_id}/download")
@@ -60,12 +69,12 @@ async def download_sheet_by_id(
     data = storage.get_sheet(sheet.sheet_id, sheet.owner_email, sheet.file_ext)
     filename = ""
     if sheet.type.lower() == "part" and sheet.instruments:
-        filename = sheet.instruments[0].upper().replace(" ", "").replace(".", "") + "-"
+        filename = sheet.instruments[0].upper() + "-"
     elif sheet.type.lower() == "score":
         filename = "SCORE-"
     filename += sheet.composers[0].split(" ")[-1] + "-"
-    filename += sheet.piece.replace(" ", "").replace(".", "")
-    filename += "." + sheet.file_ext
+    filename += sheet.piece.title().replace(" ", "").replace(".", "")
+    filename = clean_for_filename(filename) + "." + sheet.file_ext
     return StreamingResponse(
         data.stream(32 * 1024),
         headers={"Content-Disposition": f"attachment; filename={filename}",},
@@ -86,12 +95,17 @@ async def get_related(
     limit = int(os.getenv("SHEETS_PER_PAGE", 20))
     sheet = await crud.get_sheet_by_id(current_user.email, sheet_id)
     prev_page, next_page = get_next_prev_page_urls(request.url, page)
-    if field == "piece":
-        sheets = await crud.get_piece_related(sheet, limit, page, sort, direction,)
-        if not await crud.piece_related_has_next(sheet, page, limit):
+    if field in models.Sheet.allowed_related_fields():
+        sheets = await crud.find_related(
+            sheet, field, limit, page, sort, direction, exclude=False
+        )
+        if not await crud.related_has_next(sheet, field, page, limit):
             next_page = None
     else:
         sheets = []
+    title_text = getattr(sheet, field)
+    if isinstance(title_text, list):
+        title_text = ", ".join(title_text)
     return templates.TemplateResponse(
         "sheets/list.html",
         {
@@ -102,7 +116,8 @@ async def get_related(
             "sheets": sheets,
             "next_page": next_page,
             "prev_page": prev_page,
-            "title": f"Related to {getattr(sheet, field)}",
+            "title": f"Related to {title_text}",
+            "sort_links": get_sort_links(request.url, sort, direction),
         },
     )
 
@@ -115,10 +130,23 @@ async def get_sheet_info(
 ):
     sheet_id = uuid.UUID(sheet_id)
     sheet = await crud.get_sheet_by_id(current_user.email, sheet_id)
-    piece_related = await crud.get_piece_related(sheet, limit=3)
+    related_lists = {
+        "piece": {
+            "items": await crud.find_related(sheet, "piece", limit=3),
+            "plural": False,
+        },
+        "composers": {
+            "items": await crud.find_related(sheet, "composers", limit=3),
+            "plural": True,
+        },
+        "tags": {
+            "items": await crud.find_related(sheet, "tags", limit=3),
+            "plural": True,
+        },
+    }
     return templates.TemplateResponse(
         "sheets/single.html",
-        {"request": request, "sheet": sheet, "piece_related": piece_related},
+        {"request": request, "sheet": sheet, "related_lists": related_lists,},
     )
 
 
@@ -166,7 +194,7 @@ def get_next_prev_page_urls(url, page):
 
 
 def get_sort_links(url, sort, direction):
-    sort_links = defaultdict(lambda: '')
+    sort_links = defaultdict(lambda: "")
     for field in models.Sheet.sortable_fields():
         sort_links[field] = url.remove_query_params(
             ["sort", "direction"]

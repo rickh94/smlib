@@ -23,24 +23,8 @@ def form_field_from_model(
     )
 
 
-class ComposerListField(wtforms.Field):
-    widget = wtforms.widgets.TextArea()
-
-    def _value(self):
-        if self.data:
-            return "\n".join(self.data)
-        else:
-            return ""
-
-    def process_formdata(self, valuelist):
-        if valuelist:
-            self.data = [x.strip() for x in valuelist[0].split("\n")]
-        else:
-            self.data = []
-
-
 class ListField(wtforms.Field):
-    widget = wtforms.widgets.TextInput()
+    widget = wtforms.widgets.TextArea()
 
     def _value(self):
         if self.data:
@@ -50,14 +34,15 @@ class ListField(wtforms.Field):
 
     def process_formdata(self, valuelist):
         if valuelist:
-            self.data = [x.strip() for x in valuelist[0].split(",")]
+            split_char = "," if "," in valuelist[0] else "\n"
+            self.data = [x.strip() for x in valuelist[0].split(split_char)]
         else:
             self.data = []
 
 
 class SheetForm(CSRFForm):
     piece = form_field_from_model(Sheet, "piece")
-    composers = form_field_from_model(Sheet, "composers", field_class=ComposerListField)
+    composers = form_field_from_model(Sheet, "composers", field_class=ListField)
     genre = form_field_from_model(Sheet, "genre")
     tags = form_field_from_model(Sheet, "tags", field_class=ListField)
     instruments = form_field_from_model(Sheet, "instruments", field_class=ListField)

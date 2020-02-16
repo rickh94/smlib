@@ -34,7 +34,7 @@ async def setup_db():
             ("piece", pymongo.TEXT),
             ("instruments", pymongo.TEXT),
             ("composers", pymongo.TEXT),
-            ("tags", pymongo.TEXT)
+            ("tags", pymongo.TEXT),
         ],
         default_language="english",
     )
