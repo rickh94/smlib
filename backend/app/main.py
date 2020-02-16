@@ -3,6 +3,7 @@ import os
 import urllib.parse
 
 import minio
+import pymongo
 from fastapi import FastAPI, Depends, HTTPException
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
@@ -27,9 +28,18 @@ logger = logging.getLogger()
 async def setup_db():
     await db.users.create_index("email", unique=True)
     await db.sheets.create_index("owner_email")
+    await db.sheets.create_index("sheet_id", unique=True)
+    await db.sheets.create_index(
+        [
+            ("piece", pymongo.TEXT),
+            ("instruments", pymongo.TEXT),
+            ("composers", pymongo.TEXT),
+            ("tags", pymongo.TEXT)
+        ],
+        default_language="english",
+    )
     await db.sheets.create_index("instruments")
     await db.sheets.create_index("composers")
-    await db.sheets.create_index("sheet_id", unique=True)
 
 
 @app.on_event("startup")
@@ -55,9 +65,7 @@ app.include_router(
     responses={401: {"description": "Authentication Failure"}},
 )
 
-app.include_router(
-    sheet_router, prefix="/sheets",
-)
+app.include_router(sheet_router, prefix="/sheets")
 
 
 @app.middleware("http")

@@ -74,6 +74,6 @@ async def get_piece_related(
         },
         limit=limit,
         skip=skip,
-        sort=(sort, direction),
+        sort=[(sort, direction)],
     )
     return [models.SheetOut.parse_obj(sheet) async for sheet in cursor]

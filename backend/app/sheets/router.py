@@ -1,6 +1,7 @@
 import logging
 import os
 import uuid
+from collections import defaultdict
 
 from fastapi import APIRouter, Depends, UploadFile, File, Query
 from starlette.requests import Request
@@ -137,7 +138,7 @@ async def get_sheets(
     if not await crud.user_sheets_has_next(current_user.email, page, limit):
         next_page = None
     user_sheets = [models.SheetOut.parse_obj(sheet) async for sheet in sheet_cursor]
-    print(get_sort_links(request.url, sort, direction))
+    sort_links = get_sort_links(request.url, sort, direction)
     return templates.TemplateResponse(
         "sheets/list.html",
         {
@@ -149,6 +150,7 @@ async def get_sheets(
             "prev_page": prev_page,
             "next_page": next_page,
             "title": "All Sheets",
+            "sort_links": sort_links,
         },
     )
 
@@ -164,7 +166,7 @@ def get_next_prev_page_urls(url, page):
 
 
 def get_sort_links(url, sort, direction):
-    sort_links = {}
+    sort_links = defaultdict(lambda: '')
     for field in models.Sheet.sortable_fields():
         sort_links[field] = url.remove_query_params(
             ["sort", "direction"]

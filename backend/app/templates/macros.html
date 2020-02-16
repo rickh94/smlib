@@ -251,3 +251,16 @@
 {% macro submit_field(field) %}
   {{ action_button(field.label.text, color='green', id='submit', type='submit', tall=False) }}
 {% endmacro %}
+
+{% macro table_header(text, field, sort_links, sort, direction, width) %}
+  <th class="w-{{ width }}/12 inline-block text-left">
+    <a href="{{ sort_links.get(field) }}" class="w-full inline-block">
+      {{ text }}
+      {% if sort == field and direction == 1 %}
+        <i class="fas fa-arrow-down text-sm"></i>
+      {% elif sort == field and direction == -1 %}
+        <i class="fas fa-arrow-up text-sm"></i>
+      {% endif %}
+    </a>
+  </th>
+{% endmacro %}

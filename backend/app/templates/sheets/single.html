@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-  <div class="mt-2 md:max-w-2xl text-lg">
+  <div class="mt-2 mx-4 md:max-w-2xl text-lg">
     <h6 class="font-bold text-gray-600">Composer</h6>
     <p class="text-black">{{ sheet.composers | comma_truncate_list(0) }}</p>
     <h6 class="font-bold text-gray-600 mt-2">Piece</h6>
@@ -14,7 +14,7 @@
     <h6 class="font-bold text-gray-600 mt-2">Type</h6>
     <p class="text-black">{{ sheet.type or "" }}</p>
     <p class="text-gray-700 mt-4">
-      <a href="/sheets/download/{{ sheet.sheet_id }}"
+      <a href="/sheets/{{ sheet.sheet_id }}/download"
          class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
         <i class="fas fa-file-download inline-block pr-1"></i>
         Download
@@ -22,10 +22,12 @@
     </p>
     <div class="flex flex-col md:flex-row mt-4 flex-wrap">
       {% if piece_related %}
-        <div class="w-full md:max-w-sm p-2 text-sm">
-          <h5 class="font-bold text-gray-700">Other Sheets from this Piece</h5>
+        <div class="w-full md:max-w-sm p-2 text-sm ">
+        <header class="flex items-center flex-wrap">
+          <h5 class="font-bold text-gray-700 block">Other Sheets from this Piece</h5>
           <a href="/sheets/{{ sheet.sheet_id }}/related?field=piece"
-             class="p-1 border-b border-gray-700 hover:text-green-700 hover:border-green-700"></a>
+             class="ml-2 p-1 border-b border-gray-700 hover:text-green-700 hover:border-green-700">View All...</a>
+        </header>
           {% for sheet in piece_related %}
             {% include "sheets/_sheet-card.html" %}
           {% endfor %}

@@ -1,6 +1,9 @@
 <tr class="border-b border-gray-700 py-2 px-4 even:bg-gray-200 inline-block w-full">
   <td class="w-2/12 inline-block text-left pl-1">{{ sheet.composers | comma_truncate_list }}</td>
-  <td class="w-2/12 inline-block text-left">{{ sheet.piece }}</td>
+  <td class="w-2/12 inline-block text-left">
+    <a href="/sheets/{{ sheet.sheet_id }}">
+      {{ sheet.piece }}</a>
+  </td>
   <td class="w-1/12 inline-block text-left">{{ sheet.genre or "" }}</td>
   <td class="w-2/12 inline-block text-left">{{ sheet.tags | comma_truncate_list }}</td>
   <td class="w-2/12 inline-block text-left">{{ sheet.instruments | comma_truncate_list }}</td>

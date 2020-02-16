@@ -1,17 +1,22 @@
 {% extends "base.html" %}
 {% block body %}
-    <header>
-      <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">{{ title }}</h1>
+  <div class="mx-4">
+
+    <header class="my-2 h-12">
+      <h1 class="text-xl font-bold text-green-800 mr-4 inline-block py-1">{{ title }}
+      </h1><a
+        class="inline-block bg-green-200 border-b border-green-800 text-green-800 px-2 py-1"
+        href="/sheets/create">Create</a>
     </header>
     <table class="hidden md:block border-collapse w-full p-0">
       <thead class="w-full inline-block">
       <tr class="border-b-2 border-gray-800 px-4 text-gray-800 font-bold text-lg block w-full">
-        <th class="w-2/12 inline-block text-left">Composer</th>
-        <th class="w-2/12 inline-block text-left">Piece</th>
-        <th class="w-1/12 inline-block text-left">Genre</th>
-        <th class="w-2/12 inline-block text-left">Tags</th>
-        <th class="w-2/12 inline-block text-left">Instruments</th>
-        <th class="w-1/12 inline-block text-left">Type</th>
+        {{ macros.table_header('Composer', 'composers', sort_links, sort, direction, 2) }}
+        {{ macros.table_header('Piece', 'piece', sort_links, sort, direction, 2) }}
+        {{ macros.table_header('Genre', 'genre', sort_links, sort, direction, 1) }}
+        {{ macros.table_header('Tags', 'tags', sort_links, sort, direction, 2) }}
+        {{ macros.table_header('Instruments', 'instruments', sort_links, sort, direction, 2) }}
+        {{ macros.table_header('Type', 'type', sort_links, sort, direction, 1) }}
         <th class="w-1/12 inline-block text-right">Actions</th>
       </tr>
       </thead>
@@ -40,4 +45,6 @@
         </a>
       {% endif %}
     </footer>
+
+  </div>
 {% endblock body %}
