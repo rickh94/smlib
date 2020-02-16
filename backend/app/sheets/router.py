@@ -137,6 +137,7 @@ async def get_sheets(
     if not await crud.user_sheets_has_next(current_user.email, page, limit):
         next_page = None
     user_sheets = [models.SheetOut.parse_obj(sheet) async for sheet in sheet_cursor]
+    print(get_sort_links(request.url, sort, direction))
     return templates.TemplateResponse(
         "sheets/list.html",
         {
@@ -160,3 +161,18 @@ def get_next_prev_page_urls(url, page):
             page=(page - 1)
         )
     return prev_page, next_page
+
+
+def get_sort_links(url, sort, direction):
+    sort_links = {}
+    for field in models.Sheet.sortable_fields():
+        sort_links[field] = url.remove_query_params(
+            ["sort", "direction"]
+        ).include_query_params(sort=field)
+        if field == sort:
+            sort_links[field] = (
+                sort_links[field]
+                .remove_query_params(["direction"])
+                .include_query_params(direction=direction * -1)
+            )
+    return sort_links

@@ -44,9 +44,9 @@ class Passwordless(OAuth2):
 
     async def __call__(self, request: Request) -> str:
         """Extract token from cookies"""
-        logger.debug("getting token")
+        # logger.debug("getting token")
         token = request.cookies.get(self._token_name)
-        logger.debug(token)
+        # logger.debug(token)
         if not token:
             raise HTTPException(status_code=401, detail="Not Authorized")
         return token

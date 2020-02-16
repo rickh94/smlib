@@ -5,6 +5,10 @@ from pydantic import BaseModel, EmailStr, Field, UUID4
 
 
 class Sheet(BaseModel):
+    @staticmethod
+    def sortable_fields():
+        return ["piece", "composers", "genre", "tags", "instruments", "type"]
+
     piece: str = Field(..., title="Piece Title", description="The title of the piece.")
     composers: List[str] = Field(
         ...,
