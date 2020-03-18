@@ -14,6 +14,7 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 from app.auth.models import UserInDB
 from app.auth.router import auth_router
 from app.auth.security import get_current_active_user
+from app.composers.router import composer_router
 from app.dependencies import db, HERE, templates, minio_client
 from app.sheets.router import sheet_router
 
@@ -66,6 +67,7 @@ app.include_router(
 )
 
 app.include_router(sheet_router, prefix="/sheets")
+app.include_router(composer_router, prefix="/composers")
 
 
 @app.middleware("http")

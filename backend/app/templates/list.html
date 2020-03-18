@@ -22,13 +22,13 @@
       </thead>
       <tbody class="w-full inline-block">
       {% for sheet in sheets %}
-        {% include "sheets/_sheet-row.html" %}
+        {% include "_sheet-row.html" %}
       {% endfor %}
       </tbody>
     </table>
     <main class="md:hidden block  w-full">
       {% for sheet in sheets %}
-        {% include "sheets/_sheet-card.html" %}
+        {% include "_sheet-card.html" %}
       {% endfor %}
     </main>
     <footer class="w-full mt-4">

@@ -2,8 +2,6 @@ version: '3'
 services:
   mongo:
     image: mongo
-    expose:
-      - 27017
     volumes:
       - /data/db
     environment:

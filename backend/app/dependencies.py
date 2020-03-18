@@ -94,3 +94,13 @@ def comma_truncate_list(items: list, limit: int = 3):
 
 
 templates.env.filters["comma_truncate_list"] = comma_truncate_list
+
+
+def get_next_prev_page_urls(url, page):
+    next_page = url.remove_query_params(["page"]).include_query_params(page=(page + 1))
+    prev_page = None
+    if page > 1:
+        prev_page = url.remove_query_params(["page"]).include_query_params(
+            page=(page - 1)
+        )
+    return prev_page, next_page

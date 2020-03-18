@@ -6,11 +6,11 @@ from collections import defaultdict
 
 from fastapi import APIRouter, Depends, UploadFile, File, Query
 from starlette.requests import Request
-from starlette.responses import StreamingResponse, RedirectResponse
+from starlette.responses import StreamingResponse
 
 from app.auth.models import UserInDB
 from app.auth.security import get_current_active_user
-from app.dependencies import templates
+from app.dependencies import templates, get_next_prev_page_urls
 from app.sheets import models, storage, crud
 from app.sheets.forms import SheetForm
 
@@ -107,7 +107,7 @@ async def get_related(
     if isinstance(title_text, list):
         title_text = ", ".join(title_text)
     return templates.TemplateResponse(
-        "sheets/list.html",
+        "list.html",
         {
             "request": request,
             "page": page,
@@ -168,7 +168,7 @@ async def get_sheets(
     user_sheets = [models.SheetOut.parse_obj(sheet) async for sheet in sheet_cursor]
     sort_links = get_sort_links(request.url, sort, direction)
     return templates.TemplateResponse(
-        "sheets/list.html",
+        "list.html",
         {
             "request": request,
             "page": page,
@@ -181,16 +181,6 @@ async def get_sheets(
             "sort_links": sort_links,
         },
     )
-
-
-def get_next_prev_page_urls(url, page):
-    next_page = url.remove_query_params(["page"]).include_query_params(page=(page + 1))
-    prev_page = None
-    if page > 1:
-        prev_page = url.remove_query_params(["page"]).include_query_params(
-            page=(page - 1)
-        )
-    return prev_page, next_page
 
 
 def get_sort_links(url, sort, direction):
