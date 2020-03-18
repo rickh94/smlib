@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="mx-4 my-2">
+    <h1 class="text-xl font-bold text-green-800 mr-4 inline-block py-1">{{ title }}</h1>
+  </div>
+  <input type="text" class="w-full bg-gray-200 text-gray-900 px-4 py-2 m-1 rounded"
+         id="filter-composers"
+         title="Filter Composers"
+         placeholder="Type to filter">
+  <div class="flex flex-wrap w-full mt-2 p-0">
+    {% for composer in composers %}
+      <a href="/composers/{{ composer | urlencode }}"
+         class="m-1 px-2 py-1 bg-gray-200 text-gray-900 rounded border border-gray-200 composer"
+      >{{ composer }}</a>
+    {% endfor %}
+
+  </div>
+
+{% endblock body %}
+{% block script %}
+  <script>
+    function filterComposers(event) {
+      const text = event.target.value;
+      console.log(text.toLowerCase());
+      const composerELs = document.querySelectorAll('.composer');
+      composerELs.forEach(composerEL => {
+        console.log(composerEL.textContent.toLowerCase().match(text.toLowerCase));
+          if (composerEL.textContent.toLowerCase().match(text.toLowerCase()) === null) {
+            composerEL.style.display = 'none';
+          } else {
+            composerEL.style.display = 'block';
+          }
+        },
+      );
+    }
+
+    document.getElementById('filter-composers').addEventListener('keyup', filterComposers);
+  </script>
+{% endblock %}
