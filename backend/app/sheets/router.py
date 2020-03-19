@@ -2,7 +2,6 @@ import logging
 import os
 import string
 import uuid
-from collections import defaultdict
 
 from fastapi import APIRouter, Depends, UploadFile, File, Query
 from starlette.requests import Request
@@ -10,7 +9,8 @@ from starlette.responses import StreamingResponse
 
 from app.auth.models import UserInDB
 from app.auth.security import get_current_active_user
-from app.dependencies import templates, get_next_prev_page_urls
+from app.dependencies import templates
+from app.util import get_next_prev_page_urls, get_sort_links
 from app.sheets import models, storage, crud
 from app.sheets.forms import SheetForm
 
@@ -181,18 +181,3 @@ async def get_sheets(
             "sort_links": sort_links,
         },
     )
-
-
-def get_sort_links(url, sort, direction):
-    sort_links = defaultdict(lambda: "")
-    for field in models.Sheet.sortable_fields():
-        sort_links[field] = url.remove_query_params(
-            ["sort", "direction"]
-        ).include_query_params(sort=field)
-        if field == sort:
-            sort_links[field] = (
-                sort_links[field]
-                .remove_query_params(["direction"])
-                .include_query_params(direction=direction * -1)
-            )
-    return sort_links

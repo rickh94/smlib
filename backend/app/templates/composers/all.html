@@ -3,14 +3,17 @@
   <div class="mx-4 my-2">
     <h1 class="text-xl font-bold text-green-800 mr-4 inline-block py-1">{{ title }}</h1>
   </div>
-  <input type="text" class="w-full bg-gray-200 text-gray-900 px-4 py-2 m-1 rounded"
+  <input type="text" class="w-11/12 bg-gray-200 text-gray-900 px-4 py-2 m-1 rounded
+                            focus:bg-green-200 focus:text-green-900 placeholder-gray-900
+                            focus:placeholder-green-900"
          id="filter-composers"
-         title="Filter Composers"
-         placeholder="Type to filter">
+         title="Type to Filter Composers"
+         placeholder="Type to filter composers">
   <div class="flex flex-wrap w-full mt-2 p-0">
     {% for composer in composers %}
       <a href="/composers/{{ composer | urlencode }}"
-         class="m-1 px-2 py-1 bg-gray-200 text-gray-900 rounded border border-gray-200 composer"
+         class="m-1 px-2 py-1 bg-gray-200 text-gray-900 rounded border border-gray-200 composer
+                hover:bg-green-200 hover:border-green-200 hover:text-green-900"
       >{{ composer }}</a>
     {% endfor %}
 
@@ -21,10 +24,8 @@
   <script>
     function filterComposers(event) {
       const text = event.target.value;
-      console.log(text.toLowerCase());
       const composerELs = document.querySelectorAll('.composer');
       composerELs.forEach(composerEL => {
-        console.log(composerEL.textContent.toLowerCase().match(text.toLowerCase));
           if (composerEL.textContent.toLowerCase().match(text.toLowerCase()) === null) {
             composerEL.style.display = 'none';
           } else {

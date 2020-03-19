@@ -1,12 +1,9 @@
 import datetime
 import os
 from pathlib import Path
-from typing import Optional
 from urllib.parse import quote_plus
 
-import aiohttp
 import wtforms
-from fastapi import HTTPException
 from minio import Minio
 from motor import motor_asyncio
 from starlette.templating import Jinja2Templates
@@ -46,37 +43,6 @@ else:
     db: motor_asyncio.AsyncIOMotorDatabase = db_client[DB_NAME]
 
 
-async def send_email(
-    to: str,
-    subject: str,
-    text: str,
-    from_address: str,
-    from_name: str,
-    reply_to: Optional[str] = None,
-    high_priority: bool = False,
-):
-    message_data = {
-        "from": f"{from_name} <{from_address}>",
-        "to": to,
-        "subject": subject,
-        "text": text,
-    }
-    if reply_to:
-        message_data["h:Reply-To"] = reply_to
-    if high_priority:
-        message_data["h:X-Priority"] = 1
-        message_data["h:X-MSMail-Priority"] = "High"
-        message_data["h:Importance"] = "High"
-    async with aiohttp.ClientSession() as session:
-        res = await session.post(
-            mailgun_enpoint,
-            auth=aiohttp.BasicAuth("api", mailgun_key),
-            data=message_data,
-        )
-        if res.status != 200:
-            raise HTTPException(status_code=500, detail="Could not send email.")
-
-
 class CSRFForm(wtforms.Form):
     class Meta:
         csrf = True
@@ -94,13 +60,3 @@ def comma_truncate_list(items: list, limit: int = 3):
 
 
 templates.env.filters["comma_truncate_list"] = comma_truncate_list
-
-
-def get_next_prev_page_urls(url, page):
-    next_page = url.remove_query_params(["page"]).include_query_params(page=(page + 1))
-    prev_page = None
-    if page > 1:
-        prev_page = url.remove_query_params(["page"]).include_query_params(
-            page=(page - 1)
-        )
-    return prev_page, next_page

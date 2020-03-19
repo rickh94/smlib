@@ -17,7 +17,8 @@ from starlette.status import (
 from app.auth import models, security, crud
 from app.auth.forms import RequestLoginForm, SubmitCodeForm, EnterEmailForm
 from app.auth.security import oauth2_scheme
-from app.dependencies import send_email, templates
+from app.dependencies import templates
+from app.util import send_email
 
 auth_router = APIRouter()
 
