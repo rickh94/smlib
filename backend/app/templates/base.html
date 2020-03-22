@@ -13,13 +13,16 @@
   {% block styles %}
   {% endblock styles %}
 </head>
-<body>
+<body class="h-full">
 <header>
   <nav id="main-nav" class="bg-green-300 border-green-700 border-b py-1 px-3 md:px-4 text-green-900 shadow">
-    <a href="{{ url_for("index") }}" class="text-xl font-bold mr-2">Sheet Music Library</a>
-    <a href="/sheets" class="mr-2 hover:border-b border-green-700">Sheets</a>
-    <a href="/composers" class="mr-2 hover:border-b border-green-700">Composers</a>
-    <a href="/auth/logout" class="bg-green-200 border-green-200 border py-1 px-3 mx-1">Logout</a>
+    <a href="{{ url_for("index") }}" class="text-center block w-full sm:inline text-xl font-bold mr-2">Sheet Music Library</a>
+    <div class="text-center sm:text-left w-full sm:inline">
+      <a href="/sheets" class="mr-2 hover:border-b border-green-700">Sheets</a>
+      <a href="/composers" class="mr-2 hover:border-b border-green-700">Composers</a>
+    </div>
+    
+    <a href="/auth/logout" class="hidden sm:inline bg-green-200 border-green-200 border py-1 px-3 mx-1">Logout</a>
   </nav>
 </header>
 <main id="main-body" class="container mx-2 sm:mx-auto">
@@ -27,6 +30,9 @@
 
   {% endblock body %}
 </main>
+<footer class="block sm:hidden m-0 pin-b flex justify-center mt-8 border-t pt-2">
+  <a href="/auth/logout" class="bg-gray-200 border-gray-200 border py-1 px-3 mx-1">Logout</a>
+</footer>
 {% block script %}
 
 {% endblock script %}
