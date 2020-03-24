@@ -1,0 +1,13 @@
+{{ form.csrf_token }}
+
+{{ macros.text_input(form.piece, margin_bottom=False) }}
+{{ macros.text_input(form.composers, margin_bottom=False) }}
+{{ macros.text_input(form.genre, margin_bottom=False) }}
+{{ macros.text_input(form.tags, margin_bottom=False) }}
+{{ macros.text_input(form.instruments, margin_bottom=False) }}
+{{ macros.text_input(form.type) }}
+<div class="mb-4">
+  {{ form.sheet_file.label(class="text-green-700 font-bold leading-tight align-middle") }}
+  {{ form.sheet_file(class="mt-1 font-sans appearance-none bg-transparent w-full text-gray-800 leading-tight align-middle focus:outline-none") }}
+</div>
+{{ macros.submit_field(form.submit) }}

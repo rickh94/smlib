@@ -12,7 +12,7 @@ from app.auth.security import get_current_active_user
 from app.dependencies import templates
 from app.util import get_next_prev_page_urls, get_sort_links
 from app.sheets import models, storage, crud
-from app.sheets.forms import SheetForm
+from app.sheets.forms import SheetForm, UpdateSheetForm
 
 sheet_router = APIRouter()
 
@@ -43,7 +43,6 @@ async def post_create_sheet(
             sheet_id=uuid.uuid4(),
             file_ext=sheet_file.filename.split(".")[-1],
         )
-        print(sheet)
         await storage.save_sheet(
             sheet_file, sheet.sheet_id, sheet.owner_email, sheet.file_ext
         )
@@ -120,6 +119,46 @@ async def get_related(
             "sort_links": get_sort_links(request.url, sort, direction),
         },
     )
+
+
+@sheet_router.get("/{sheet_id}/update")
+async def get_sheet_update_form(
+    request: Request,
+    sheet_id: str,
+    current_user: UserInDB = Depends(get_current_active_user),
+):
+    form = UpdateSheetForm(meta={"csrf_context": request.session})
+    sheet_id = uuid.UUID(sheet_id)
+    sheet = await crud.get_sheet_by_id(current_user.email, sheet_id)
+    form.piece.data = sheet.piece
+    form.composers.data = sheet.composers
+    form.genre.data = sheet.genre
+    form.tags.data = sheet.tags
+    form.instruments.data = sheet.instruments
+    form.type.data = sheet.type
+    return templates.TemplateResponse(
+        "sheets/update.html",
+        {
+            "request": request,
+            "form": form,
+            "sheet_id": sheet_id,
+            "piece_title": sheet.piece,
+        },
+    )
+
+
+@sheet_router.post("/{sheet_id}/update")
+async def post_sheet_update(
+    request: Request,
+    sheet_id: str,
+    current_user: UserInDB = Depends(get_current_active_user),
+    sheet_file: UploadFile = File(None),
+):
+    form = UpdateSheetForm(await request.form(), meta={"csrf_context": request.session})
+    if form.validate():
+        print(sheet_file.filename)
+        return f"updated sheet information {form.data}"
+    return "Something went wrong"
 
 
 @sheet_router.get("/{sheet_id}")

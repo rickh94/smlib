@@ -49,3 +49,7 @@ class SheetForm(CSRFForm):
     type = form_field_from_model(Sheet, "type")
     sheet_file = wtforms.FileField("Sheet File", validators=[InputRequired()])
     submit = wtforms.SubmitField()
+
+
+class UpdateSheetForm(SheetForm):
+    sheet_file = wtforms.FileField("Sheet File (optional)")
