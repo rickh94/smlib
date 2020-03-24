@@ -156,8 +156,27 @@ async def post_sheet_update(
 ):
     form = UpdateSheetForm(await request.form(), meta={"csrf_context": request.session})
     if form.validate():
-        print(sheet_file.filename)
-        return f"updated sheet information {form.data}"
+        old_sheet = await crud.get_sheet_by_id(current_user.email, uuid.UUID(sheet_id))
+        new_id = uuid.uuid4()
+        file_ext = old_sheet.file_ext
+        if sheet_file.filename:
+            file_ext = sheet_file.filename.split(".")[-1]
+            await storage.save_sheet(sheet_file, new_id, current_user.email, file_ext)
+        else:
+            storage.copy_sheet(
+                old_sheet.sheet_id, new_id, current_user.email, old_sheet.file_ext
+            )
+        new_sheet = models.Sheet(
+            **form.data,
+            owner_email=current_user.email,
+            sheet_id=uuid.uuid4(),
+            file_ext=file_ext,
+        )
+        new_sheet_in_db = await crud.update_sheet(old_sheet, new_sheet)
+        return templates.TemplateResponse(
+            "sheets/created.html",
+            {"request": request, "sheet_id": new_sheet_in_db.sheet_id},
+        )
     return "Something went wrong"
 
 
@@ -169,6 +188,7 @@ async def get_sheet_info(
 ):
     sheet_id = uuid.UUID(sheet_id)
     sheet = await crud.get_sheet_by_id(current_user.email, sheet_id)
+    logger.debug(sheet.prev_versions)
     related_lists = {
         "piece": {
             "items": await crud.find_related(sheet, "piece", limit=3),

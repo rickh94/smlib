@@ -42,6 +42,11 @@ class Sheet(BaseModel):
     )
     sheet_id: UUID4 = Field(..., title="Unique ID")
     file_ext: str = Field(..., title="File Extension")
+    current: bool = Field(
+        True,
+        title="Current",
+        description="Whether this is the current version of a sheet.",
+    )
 
 
 class SheetWithVersions(Sheet):
@@ -52,7 +57,7 @@ class SheetWithVersions(Sheet):
     )
 
 
-class SheetInDB(Sheet):
+class SheetInDB(SheetWithVersions):
     _id: Optional[str] = None
 
     @property

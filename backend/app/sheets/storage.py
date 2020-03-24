@@ -28,3 +28,13 @@ def get_sheet(sheet_id: UUID, owner_email: str, sheet_file_ext: str):
     return minio_client.get_object(
         os.getenv("MINIO_BUCKET_NAME"), f"{owner_email}/{sheet_id}.{sheet_file_ext}"
     )
+
+
+def copy_sheet(
+    old_sheet_id: UUID, new_sheet_id: UUID, owner_email: str, sheet_file_ext: str
+):
+    minio_client.copy_object(
+        os.getenv("MINIO_BUCKET_NAME"),
+        f"{owner_email}/{new_sheet_id}.{sheet_file_ext}",
+        f"/{os.getenv('MINIO_BUCKET_NAME')}/{owner_email}/{old_sheet_id}.{sheet_file_ext}",
+    )

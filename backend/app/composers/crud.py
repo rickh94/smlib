@@ -6,11 +6,14 @@ def get_composer_query(owner_email, composer_name):
     return {
         "owner_email": owner_email,
         "composers": {"$elemMatch": {"$eq": composer_name}},
+        "current": True,
     }
 
 
 async def get_all_composers(email: str):
-    return await db.sheets.distinct("composers", {"owner_email": email})
+    return await db.sheets.distinct(
+        "composers", {"owner_email": email, "current": True}
+    )
 
 
 async def get_composer_sheets(
