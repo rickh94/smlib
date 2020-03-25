@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
-  <form action="/auth/login{% if next_location %}?next={{ next_location }}{% endif %}"
-        method="post" class="w-full md:max-w-md mx-auto">
+ <form action="/auth/login{% if next_location %}?next={{ next_location }}{% endif %}"
+        method="post" class="w-full md:max-w-md mx-0 md:mx-auto">
+<h1 class="text-xl font-bold text-green-800 pt-5 pb-0 w-full">Login</h1>
     {{ form.csrf_token }}
-    <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">Login</h1>
-    {% if error %}
+   {% if error %}
       <div class="mt-1 text-red-700" id="error">{{ error }}</div>
     {% endif %}
     <div class="mb-4">
-      {{ macros.text_input(form.email, margin_bottom=False) }}
+    {{ macros.text_input(form.email, margin_bottom=False) }}
       {{ macros.small_text_button(id="learn-more-button", text="More Info") }}
     </div>
     <div class="mb-4">
