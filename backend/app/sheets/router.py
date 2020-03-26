@@ -159,7 +159,11 @@ async def post_sheet_update(
         old_sheet = await crud.get_sheet_by_id(current_user.email, uuid.UUID(sheet_id))
         new_id = uuid.uuid4()
         file_ext = old_sheet.file_ext
+        logger.debug(f"New sheet id {new_id}")
+        # logger.debug(sheet_file.content_type)
+        # logger.debug(sheet_file.filename)
         if sheet_file.filename:
+            logger.debug("Uploading new sheet")
             file_ext = sheet_file.filename.split(".")[-1]
             await storage.save_sheet(sheet_file, new_id, current_user.email, file_ext)
         else:
@@ -169,12 +173,12 @@ async def post_sheet_update(
         new_sheet = models.Sheet(
             **form.data,
             owner_email=current_user.email,
-            sheet_id=uuid.uuid4(),
+            sheet_id=new_id,
             file_ext=file_ext,
         )
         new_sheet_in_db = await crud.update_sheet(old_sheet, new_sheet)
         return templates.TemplateResponse(
-            "sheets/created.html",
+            "sheets/updated.html",
             {"request": request, "sheet_id": new_sheet_in_db.sheet_id},
         )
     return "Something went wrong"
@@ -188,7 +192,8 @@ async def get_sheet_info(
 ):
     sheet_id = uuid.UUID(sheet_id)
     sheet = await crud.get_sheet_by_id(current_user.email, sheet_id)
-    logger.debug(sheet.prev_versions)
+    prev_version_records = await crud.get_previous_versions(sheet)
+    logger.debug(prev_version_records)
     related_lists = {
         "piece": {
             "items": await crud.find_related(sheet, "piece", limit=3),
@@ -205,7 +210,12 @@ async def get_sheet_info(
     }
     return templates.TemplateResponse(
         "sheets/single.html",
-        {"request": request, "sheet": sheet, "related_lists": related_lists,},
+        {
+            "request": request,
+            "sheet": sheet,
+            "related_lists": related_lists,
+            "prev_versions": prev_version_records,
+        },
     )
 
 

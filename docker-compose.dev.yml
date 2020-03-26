@@ -45,6 +45,8 @@ services:
 
   minio:
     image: minio/minio
+    ports:
+      - "9000:9000"
     volumes:
       - minio-data:/data
     env_file:

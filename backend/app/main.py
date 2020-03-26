@@ -24,6 +24,11 @@ app.mount("/static", StaticFiles(directory=str(HERE / "static")), name="static")
 
 logger = logging.getLogger()
 
+if os.getenv("DEBUG"):
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.CRITICAL)
+
 
 @app.on_event("startup")
 async def setup_db():

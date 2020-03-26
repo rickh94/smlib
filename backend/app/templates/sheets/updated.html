@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="m-4">
+    <header>
+      <h1 class="text-xl text-green-800 text-xl my-1 font-bold">Sheet Updated</h1>
+    </header>
+    <main class="mt-2">
+      <p>
+        <a href="/sheets/{{ sheet_id }}"
+           class="text-green-600 hover:text-green-800 hover:underline">Go To Sheet</a>
+      </p>
+      <p>
+        <a href="/sheets/create"
+           class="text-green-600 hover:text-green-800 hover:underline">Create New
+          Sheet</a>
+      </p>
+    </main>
+  </div>
+{% endblock %}

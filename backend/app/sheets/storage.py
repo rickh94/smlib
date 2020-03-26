@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 from uuid import UUID
@@ -5,6 +6,8 @@ from uuid import UUID
 from fastapi import UploadFile
 
 from app.dependencies import minio_client
+
+logger = logging.getLogger()
 
 
 async def save_sheet(
@@ -14,13 +17,14 @@ async def save_sheet(
     tmp_sheet.write(await sheet_file.read())
     tmp_sheet.seek(0)
     sheet_stats = os.stat(tmp_sheet.name)
+    logger.debug(f"Sheet id for upload: {sheet_id}")
     result = minio_client.put_object(
         os.getenv("MINIO_BUCKET_NAME"),
         f"{owner_email}/{sheet_id}.{sheet_file_ext}",
         tmp_sheet,
         sheet_stats.st_size,
     )
-    print(result)
+    logger.debug(result)
     tmp_sheet.close()
 
 

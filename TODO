@@ -1,7 +1,3 @@
-finish implementing sheet updating. form and routes exist, takes submitted 
-form data and update sheet record, creates a new version and hides the old.
-submitting a new file needs to be tested
-also need to add update button on sheet page and a tweaked landing template.
 Create search function
 create tags page
 create instruments page

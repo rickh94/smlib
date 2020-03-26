@@ -51,6 +51,13 @@ async def get_sheet_by_id(owner_email: str, sheet_id: uuid.UUID) -> models.Sheet
     return models.SheetInDB.parse_obj(found)
 
 
+async def get_previous_versions(sheet: models.SheetInDB):
+    return [
+        (await get_sheet_by_id(sheet.owner_email, version_id), replacement_time)
+        for (version_id, replacement_time) in sheet.prev_versions
+    ]
+
+
 async def get_user_sheets(
     owner_email: str,
     page: int = 1,

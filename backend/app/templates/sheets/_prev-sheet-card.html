@@ -1,0 +1,40 @@
+<div class="shadow border border-gray-100 rounded my-2 px-4 pb-4 pt-2">
+  <h6 class="font-bold text-gray-600">Replacement Time</h6>
+  <p class="text-black">{{ replacement_time.strftime("%b %-d, %Y %-I:%M %p") }}</p>
+  {% if sheet.composers != prev_sheet.composers %}
+    <h6 class="font-bold text-red-600">Composer</h6>
+    <p class="text-black">{{ prev_sheet.composers | comma_truncate_list }}</p>
+  {% endif %}
+  {% if sheet.piece != prev_sheet.piece %}
+    <h6 class="font-bold text-red-600 mt-1">Piece</h6>
+    <p class="text-black">{{ prev_sheet.piece }}</p>
+  {% endif %}
+  {% if sheet.genre != prev_sheet.genre %}
+    <h6 class="font-bold text-red-600 mt-1">Genre</h6>
+    <p class="text-black">{{ prev_sheet.genre or "" }}</p>
+  {% endif %}
+  {% if sheet.instruments != prev_sheet.instruments %}
+    <h6 class="font-bold text-red-600 mt-1">Instruments</h6>
+    <p class="text-black">{{ prev_sheet.instruments | comma_truncate_list(3) }}</p>
+  {% endif %}
+  {% if sheet.tags != prev_sheet.tags %}
+    <h6 class="font-bold text-red-600 mt-1">Tags</h6>
+    <p class="text-black">{{ prev_sheet.tags | comma_truncate_list(3) }}</p>
+  {% endif %}
+  {% if sheet.type != prev_sheet.type %}
+    <h6 class="font-bold text-red-600 mt-1">Type</h6>
+    <p class="text-black">{{ prev_sheet.type or "" }}</p>
+  {% endif %}
+  <p class="text-gray-700 mt-2">
+    <a href="/sheets/{{ prev_sheet.sheet_id }}/download"
+       class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
+      <i class="fas fa-file-download inline-block pr-1"></i>
+      Download</a>
+    <a href="/sheets/{{ prev_sheet.sheet_id }}"
+       class="ml-2 hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700"
+       title="More Info">
+      <i class="fas fa-info-circle inline-block pr-1"></i>
+      More Info
+    </a>
+  </p>
+</div>

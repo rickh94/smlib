@@ -1,25 +1,40 @@
 {% extends "base.html" %}
 {% block body %}
   <div class="mt-2 mx-4 w-full text-lg">
-    <h6 class="font-bold text-gray-600">Composer</h6>
-    <p class="text-black">{{ sheet.composers | comma_truncate_list(0) }}</p>
-    <h6 class="font-bold text-gray-600 mt-2">Piece</h6>
-    <p class="text-black">{{ sheet.piece }}</p>
-    <h6 class="font-bold text-gray-600 mt-2">Genre</h6>
-    <p class="text-black">{{ sheet.genre or "" }}</p>
-    <h6 class="font-bold text-gray-600 mt-2">Instruments</h6>
-    <p class="text-black">{{ sheet.instruments | comma_truncate_list(0) }}</p>
-    <h6 class="font-bold text-gray-600 mt-2">Tags</h6>
-    <p class="text-black">{{ sheet.tags | comma_truncate_list(0) }}</p>
-    <h6 class="font-bold text-gray-600 mt-2">Type</h6>
-    <p class="text-black">{{ sheet.type or "" }}</p>
-    <p class="text-gray-700 mt-4">
-      <a href="/sheets/{{ sheet.sheet_id }}/download"
-         class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
-        <i class="fas fa-file-download inline-block pr-1"></i>
-        Download
-      </a>
-    </p>
+    <div class="flex flex-wrap">
+      <div class="mx-2 mb-2">
+        <h6 class="font-bold text-gray-600">Composer</h6>
+        <p class="text-black">{{ sheet.composers | comma_truncate_list(0) }}</p>
+        <h6 class="font-bold text-gray-600 mt-2">Piece</h6>
+        <p class="text-black">{{ sheet.piece }}</p>
+        <h6 class="font-bold text-gray-600 mt-2">Genre</h6>
+        <p class="text-black">{{ sheet.genre or "" }}</p>
+        <h6 class="font-bold text-gray-600 mt-2">Instruments</h6>
+        <p class="text-black">{{ sheet.instruments | comma_truncate_list(0) }}</p>
+        <h6 class="font-bold text-gray-600 mt-2">Tags</h6>
+        <p class="text-black">{{ sheet.tags | comma_truncate_list(0) }}</p>
+        <h6 class="font-bold text-gray-600 mt-2">Type</h6>
+        <p class="text-black">{{ sheet.type or "" }}</p>
+        <p class="text-gray-700 mt-4">
+          <a href="/sheets/{{ sheet.sheet_id }}/download"
+             class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
+            <i class="fas fa-file-download inline-block pr-1"></i>
+            Download
+          </a>
+          <a href="/sheets/{{ sheet.sheet_id }}/update"
+             class="hover:text-green-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
+            <i class="fas fa-pencil-alt inline-block pr-1"></i>
+            Edit
+          </a>
+        </p>
+      </div>
+      <div class="mx-2">
+      <h4 class="font-bold text-gray-600">Previous Versions</h4>
+        {% for (prev_sheet, replacement_time) in prev_versions %}
+          {% include "sheets/_prev-sheet-card.html" %}
+        {% endfor %}
+      </div>
+    </div>
     <div class="flex flex-col md:flex-row mt-4 flex-wrap">
       {% for field, info in related_lists.items() %}
         {{ macros.related_list(field, info, sheet) }}
