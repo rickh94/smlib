@@ -17,6 +17,7 @@ from app.auth.security import get_current_active_user
 from app.composers.router import composer_router
 from app.dependencies import db, HERE, templates, minio_client
 from app.sheets.router import sheet_router
+from app.tags.router import tag_router
 
 app = FastAPI(title="Sheet Music Database", version="20.02.0")
 
@@ -46,6 +47,7 @@ async def setup_db():
     )
     await db.sheets.create_index("instruments")
     await db.sheets.create_index("composers")
+    await db.sheets.create_index("tags")
 
 
 @app.on_event("startup")
@@ -73,6 +75,7 @@ app.include_router(
 
 app.include_router(sheet_router, prefix="/sheets")
 app.include_router(composer_router, prefix="/composers")
+app.include_router(tag_router, prefix="/tags")
 
 
 @app.middleware("http")

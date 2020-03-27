@@ -1,5 +1,7 @@
 Create search function
-create tags page
 create instruments page
 implement delete for sheets
 create homepage with recently accessed
+add titles to composer and tag sheets list page
+fix bug showing empty tag
+add tags nav link
