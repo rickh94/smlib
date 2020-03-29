@@ -7,18 +7,18 @@ from starlette.requests import Request
 from app import util
 from app.auth.models import UserInDB
 from app.auth.security import get_current_active_user
-from app.tags import crud
+from app.instruments import crud
 from app.dependencies import templates
 
-tag_router = APIRouter()
+instrument_router = APIRouter()
 
 logger = logging.getLogger()
 
 
-@tag_router.get("/{tag_name}")
-async def get_single_tag(
+@instrument_router.get("/{instrument_name}")
+async def get_single_instrument(
     request: Request,
-    tag_name: str,
+    instrument_name: str,
     current_user: UserInDB = Depends(get_current_active_user),
     page: int = Query(1),
     sort: str = Query("piece"),
@@ -26,10 +26,12 @@ async def get_single_tag(
 ):
     limit = int(os.getenv("SHEETS_PER_PAGE", 20))
     prev_page, next_page = util.get_next_prev_page_urls(request.url, page)
-    sheets = await crud.get_tag_sheets(
-        current_user.email, tag_name, limit, page, sort, direction
+    sheets = await crud.get_instrument_sheets(
+        current_user.email, instrument_name, limit, page, sort, direction
     )
-    if not await crud.tag_sheets_has_next(current_user.email, tag_name, limit, page):
+    if not await crud.instrument_sheets_has_next(
+        current_user.email, instrument_name, limit, page
+    ):
         next_page = None
     return templates.TemplateResponse(
         "list.html",
@@ -42,17 +44,21 @@ async def get_single_tag(
             "next_page": next_page,
             "prev_page": prev_page,
             "sort_links": util.get_sort_links(request.url, sort, direction),
-            "title": tag_name,
+            "title": instrument_name,
         },
     )
 
 
-@tag_router.get("")
-async def get_tags(
+@instrument_router.get("")
+async def get_instruments(
     request: Request, current_user: UserInDB = Depends(get_current_active_user),
 ):
-    tags = await crud.get_all_tags(current_user.email)
+    instruments = await crud.get_all_instruments(current_user.email)
     return templates.TemplateResponse(
-        "tags/all.html",
-        {"request": request, "tags": sorted(tags), "title": "All Tags"},
+        "instruments/all.html",
+        {
+            "request": request,
+            "instruments": sorted(instruments),
+            "title": "All instruments",
+        },
     )

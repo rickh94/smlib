@@ -14,10 +14,11 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 from app.auth.models import UserInDB
 from app.auth.router import auth_router
 from app.auth.security import get_current_active_user
-from app.composers.router import composer_router
 from app.dependencies import db, HERE, templates, minio_client
+from app.composers.router import composer_router
 from app.sheets.router import sheet_router
 from app.tags.router import tag_router
+from app.instruments.router import instrument_router
 
 app = FastAPI(title="Sheet Music Database", version="20.02.0")
 
@@ -76,6 +77,7 @@ app.include_router(
 app.include_router(sheet_router, prefix="/sheets")
 app.include_router(composer_router, prefix="/composers")
 app.include_router(tag_router, prefix="/tags")
+app.include_router(instrument_router, prefix="/instruments")
 
 
 @app.middleware("http")

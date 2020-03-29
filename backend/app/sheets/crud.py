@@ -134,3 +134,10 @@ async def get_piece_related(
     direction: int = 1,
 ) -> List[models.SheetOut]:
     return await find_related(sheet, "piece", limit, page, sort, direction)
+
+
+async def delete_sheet_by_id(owner_email: str, sheet_id: uuid.UUID):
+    sheet = models.SheetInDB.parse_obj(await get_sheet_by_id(owner_email, sheet_id))
+    for version_id, _ in sheet.prev_versions:
+        await db.sheets.delete_one({"owner_email": owner_email, "sheet_id": version_id})
+    await db.sheets.delete_one({"owner_email": owner_email, "sheet_id": sheet_id})

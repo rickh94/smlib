@@ -184,6 +184,17 @@ async def post_sheet_update(
     return "Something went wrong"
 
 
+@sheet_router.get("/{sheet_id}/delete")
+async def delete_sheet(
+    request: Request,
+    sheet_id: str,
+    current_user: UserInDB = Depends(get_current_active_user),
+):
+    sheet_id = uuid.UUID(sheet_id)
+    await crud.delete_sheet_by_id(current_user.email, sheet_id)
+    return f"Successfully deleted {sheet_id}"
+
+
 @sheet_router.get("/{sheet_id}")
 async def get_sheet_info(
     request: Request,

@@ -44,6 +44,7 @@ async def get_single_composer(
             "next_page": next_page,
             "prev_page": prev_page,
             "sort_links": util.get_sort_links(request.url, sort, direction),
+            "title": composer_name,
         },
     )
 

@@ -11,9 +11,7 @@ def get_tag_query(owner_email, tag_name):
 
 
 async def get_all_tags(email: str):
-    return await db.sheets.distinct(
-        "tags", {"owner_email": email, "current": True}
-    )
+    return await db.sheets.distinct("tags", {"owner_email": email, "current": True})
 
 
 async def get_tag_sheets(
