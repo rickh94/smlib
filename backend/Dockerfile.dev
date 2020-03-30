@@ -1,6 +1,7 @@
 FROM kennethreitz/pipenv
 
 ADD ./app /app/app
+ADD ./testdata /testdata
 VOLUME /socks
 WORKDIR /app
 COPY ./manage.py /app

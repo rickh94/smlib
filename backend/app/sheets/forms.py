@@ -47,6 +47,7 @@ class SheetForm(CSRFForm):
     tags = form_field_from_model(Sheet, "tags", field_class=ListField)
     instruments = form_field_from_model(Sheet, "instruments", field_class=ListField)
     type = form_field_from_model(Sheet, "type")
+    catalog_number = form_field_from_model(Sheet, "catalog_number")
     sheet_file = wtforms.FileField("Sheet File", validators=[InputRequired()])
     submit = wtforms.SubmitField()
 

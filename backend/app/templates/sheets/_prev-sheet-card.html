@@ -9,6 +9,10 @@
     <h6 class="font-bold text-red-600 mt-1">Piece</h6>
     <p class="text-black">{{ prev_sheet.piece }}</p>
   {% endif %}
+  {% if sheet.catalog_number != prev_sheet.piece %}
+    <h6 class="font-bold text-red-600 mt-1">Catalog Number</h6>
+    <p class="text-black">{{ prev_sheet.catalog_number }}</p>
+  {% endif %}
   {% if sheet.genre != prev_sheet.genre %}
     <h6 class="font-bold text-red-600 mt-1">Genre</h6>
     <p class="text-black">{{ prev_sheet.genre or "" }}</p>

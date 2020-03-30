@@ -52,10 +52,12 @@ async def get_sheet_by_id(owner_email: str, sheet_id: uuid.UUID) -> models.Sheet
 
 
 async def get_previous_versions(sheet: models.SheetInDB):
-    return [
-        (await get_sheet_by_id(sheet.owner_email, version_id), replacement_time)
-        for (version_id, replacement_time) in sheet.prev_versions
-    ]
+    if sheet.prev_versions:
+        return [
+            (await get_sheet_by_id(sheet.owner_email, version_id), replacement_time)
+            for (version_id, replacement_time) in sheet.prev_versions
+        ]
+    return []
 
 
 async def get_user_sheets(

@@ -4,6 +4,9 @@
     <a href="/sheets/{{ sheet.sheet_id }}">
       {{ sheet.piece }}</a>
   </td>
+{#  <td class="w-2/12 inline-block text-left mr-1">#}
+{#    {{ sheet.catalog_number }}#}
+{#  </td>#}
   <td class="w-1/12 inline-block text-left mr-1">{{ sheet.genre or "" }}</td>
   <td class="w-2/12 inline-block text-left mr-1">{{ sheet.tags | comma_truncate_list }}</td>
   <td class="w-2/12 inline-block text-left mr-1">{{ sheet.instruments | comma_truncate_list }}</td>

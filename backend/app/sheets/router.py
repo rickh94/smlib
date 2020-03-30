@@ -5,7 +5,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, UploadFile, File, Query
 from starlette.requests import Request
-from starlette.responses import StreamingResponse
+from starlette.responses import StreamingResponse, RedirectResponse
 
 from app.auth.models import UserInDB
 from app.auth.security import get_current_active_user
@@ -186,13 +186,11 @@ async def post_sheet_update(
 
 @sheet_router.get("/{sheet_id}/delete")
 async def delete_sheet(
-    request: Request,
-    sheet_id: str,
-    current_user: UserInDB = Depends(get_current_active_user),
+    sheet_id: str, current_user: UserInDB = Depends(get_current_active_user),
 ):
     sheet_id = uuid.UUID(sheet_id)
     await crud.delete_sheet_by_id(current_user.email, sheet_id)
-    return f"Successfully deleted {sheet_id}"
+    return RedirectResponse(url="/sheets")
 
 
 @sheet_router.get("/{sheet_id}")

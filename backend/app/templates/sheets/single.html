@@ -7,6 +7,8 @@
         <p class="text-black">{{ sheet.composers | comma_truncate_list(0) }}</p>
         <h6 class="font-bold text-gray-600 mt-2">Piece</h6>
         <p class="text-black">{{ sheet.piece }}</p>
+        <h6 class="font-bold text-gray-600 mt-2">Catalog Number</h6>
+        <p class="text-black">{{ sheet.catalog_number }}</p>
         <h6 class="font-bold text-gray-600 mt-2">Genre</h6>
         <p class="text-black">{{ sheet.genre or "" }}</p>
         <h6 class="font-bold text-gray-600 mt-2">Instruments</h6>
@@ -33,12 +35,14 @@
           </a>
         </p>
       </div>
+      {% if prev_versions  %}
       <div class="mx-2">
       <h4 class="font-bold text-gray-600">Previous Versions</h4>
         {% for (prev_sheet, replacement_time) in prev_versions %}
           {% include "sheets/_prev-sheet-card.html" %}
         {% endfor %}
       </div>
+      {% endif %}
     </div>
     <div class="flex flex-col md:flex-row mt-4 flex-wrap">
       {% for field, info in related_lists.items() %}

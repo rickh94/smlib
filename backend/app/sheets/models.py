@@ -7,13 +7,34 @@ from pydantic import BaseModel, EmailStr, Field, UUID4
 class Sheet(BaseModel):
     @staticmethod
     def sortable_fields():
-        return ["piece", "composers", "genre", "tags", "instruments", "type"]
+        return [
+            "piece",
+            "composers",
+            "genre",
+            "tags",
+            "instruments",
+            "type",
+            "catalog_number",
+        ]
 
     @staticmethod
     def allowed_related_fields():
-        return ["piece", "composers", "genre", "tags", "instruments", "type"]
+        return [
+            "piece",
+            "composers",
+            "genre",
+            "tags",
+            "instruments",
+            "type",
+            "catalog_number",
+        ]
 
     piece: str = Field(..., title="Piece Title", description="The title of the piece.")
+    catalog_number: str = Field(
+        None,
+        title="Catalog Number",
+        description="Any catalog information about the piece.",
+    )
     composers: List[str] = Field(
         ...,
         title="Composers",

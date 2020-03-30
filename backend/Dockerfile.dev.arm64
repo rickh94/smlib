@@ -1,6 +1,7 @@
 FROM rickh94/arm-pipenv:latest
 
 ADD ./app /app/app
+ADD ./testdata /testdata
 VOLUME /socks
 WORKDIR /app
 COPY ./manage.py /app
