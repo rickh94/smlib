@@ -93,7 +93,7 @@ async def related_has_next(
 ):
     skip = limit * page
     count = await db.sheets.count_documents(
-        generate_related_query(sheet, field, exclude), limit=1, skip=skip,
+        generate_related_query(sheet, field, exclude), limit=1, skip=skip
     )
     return count > 0
 
@@ -123,7 +123,7 @@ async def find_related(
     skip = limit * (page - 1)
     query_filter = generate_related_query(sheet, field, exclude)
     cursor = db.sheets.find(
-        query_filter, limit=limit, skip=skip, sort=[(sort, direction)],
+        query_filter, limit=limit, skip=skip, sort=[(sort, direction)]
     )
     return [models.SheetOut.parse_obj(sheet) async for sheet in cursor]
 
@@ -140,6 +140,9 @@ async def get_piece_related(
 
 async def delete_sheet_by_id(owner_email: str, sheet_id: uuid.UUID):
     sheet = models.SheetInDB.parse_obj(await get_sheet_by_id(owner_email, sheet_id))
-    for version_id, _ in sheet.prev_versions:
-        await db.sheets.delete_one({"owner_email": owner_email, "sheet_id": version_id})
+    if sheet.prev_versions:
+        for version_id, _ in sheet.prev_versions:
+            await db.sheets.delete_one(
+                {"owner_email": owner_email, "sheet_id": version_id}
+            )
     await db.sheets.delete_one({"owner_email": owner_email, "sheet_id": sheet_id})

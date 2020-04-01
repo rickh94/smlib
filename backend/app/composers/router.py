@@ -51,7 +51,7 @@ async def get_single_composer(
 
 @composer_router.get("")
 async def get_composers(
-    request: Request, current_user: UserInDB = Depends(get_current_active_user),
+    request: Request, current_user: UserInDB = Depends(get_current_active_user)
 ):
     composers = await crud.get_all_composers(current_user.email)
     return templates.TemplateResponse(

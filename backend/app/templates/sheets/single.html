@@ -28,11 +28,11 @@
             <i class="fas fa-pencil-alt inline-block pr-1"></i>
             Edit
           </a>
-          <a href="/sheets/{{ sheet.sheet_id }}/delete"
+          <button id="delete-dialog-button"
              class="hover:text-red-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-red-700">
             <i class="fas fa-trash-alt inline-block pr-1"></i>
             Delete
-          </a>
+          </button>
         </p>
       </div>
       {% if prev_versions  %}
@@ -50,4 +50,31 @@
       {% endfor %}
     </div>
   </div>
+  {% call macros.modal('confirmdelete') %}
+    {% call macros.modal_body('Confirm Delete') %}
+    Are you sure you want to delete {{ sheet.piece }}?
+    {% endcall %}
+    {% call macros.modal_actions() %}
+    <button class="ml-2 p-1 pr-2 border-b border-gray-700 hover:text-green-700 hover:border-green-700" 
+            id="cancel-delete-button">
+      <i class="fas fa-arrow-left inline-block pr-1"></i>
+      Do Not Delete
+    </button>
+    <a class="ml-2 p-1 pr-2 border-b border-gray-700 hover:text-red-700 hover:border-red-700" 
+    href="/sheets/{{ sheet.sheet_id }}/delete">
+      <i class="fas fa-check inline-block pr-1"></i>
+      Yes, Delete
+    </a>
+    {% endcall %}
+  {% endcall %}
 {% endblock body %}
+
+{% block script %}
+{{ macros.modal_script('confirmdelete') }}
+<script>
+  document.getElementById('delete-dialog-button').onclick = openModalConfirmdelete;
+  document.getElementById('cancel-delete-button').onclick = closeModalConfirmdelete;
+</script>
+<script>
+</script>
+{% endblock script %}

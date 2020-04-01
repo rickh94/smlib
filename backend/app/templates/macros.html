@@ -33,11 +33,11 @@
   {% set openModalFunc = 'openModal' + name | capitalize %}
   {% set closeModalFunc = 'closeModal' + name | capitalize %}
   <script>
-    var {{ modalWrapperEl }} =;
+    var {{ modalWrapperEl }} =
     document.getElementById('modal-wrapper-{{ name }}');
-    var {{ closeButton }} =;
+    var {{ closeButton }} =
     document.getElementById('close-modal-{{ name }}');
-    var {{ modalEl }} =;
+    var {{ modalEl }} =
     document.getElementById('modal-{{ name }}');
 
     function close{{ name | capitalize }}OnEscape(event) {

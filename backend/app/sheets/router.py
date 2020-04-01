@@ -76,7 +76,7 @@ async def download_sheet_by_id(
     filename = clean_for_filename(filename) + "." + sheet.file_ext
     return StreamingResponse(
         data.stream(32 * 1024),
-        headers={"Content-Disposition": f"attachment; filename={filename}",},
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
 
 
@@ -186,7 +186,7 @@ async def post_sheet_update(
 
 @sheet_router.get("/{sheet_id}/delete")
 async def delete_sheet(
-    sheet_id: str, current_user: UserInDB = Depends(get_current_active_user),
+    sheet_id: str, current_user: UserInDB = Depends(get_current_active_user)
 ):
     sheet_id = uuid.UUID(sheet_id)
     await crud.delete_sheet_by_id(current_user.email, sheet_id)

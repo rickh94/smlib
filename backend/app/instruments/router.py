@@ -51,7 +51,7 @@ async def get_single_instrument(
 
 @instrument_router.get("")
 async def get_instruments(
-    request: Request, current_user: UserInDB = Depends(get_current_active_user),
+    request: Request, current_user: UserInDB = Depends(get_current_active_user)
 ):
     instruments = await crud.get_all_instruments(current_user.email)
     return templates.TemplateResponse(

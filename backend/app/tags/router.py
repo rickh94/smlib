@@ -49,10 +49,9 @@ async def get_single_tag(
 
 @tag_router.get("")
 async def get_tags(
-    request: Request, current_user: UserInDB = Depends(get_current_active_user),
+    request: Request, current_user: UserInDB = Depends(get_current_active_user)
 ):
     tags = await crud.get_all_tags(current_user.email)
     return templates.TemplateResponse(
-        "tags/all.html",
-        {"request": request, "tags": sorted(tags), "title": "All Tags"},
+        "tags/all.html", {"request": request, "tags": sorted(tags), "title": "All Tags"}
     )

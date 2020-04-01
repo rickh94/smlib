@@ -21,7 +21,7 @@ class RequestLoginForm(CSRFForm):
 class SubmitCodeForm(CSRFForm):
     email = wtforms.HiddenField()
     code = wtforms.StringField(
-        "Login Code", validators=[InputRequired()], render_kw={"placeholder": "123456"},
+        "Login Code", validators=[InputRequired()], render_kw={"placeholder": "123456"}
     )
     submit = wtforms.SubmitField()
 
