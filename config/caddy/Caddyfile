@@ -1,0 +1,3 @@
+:80 {
+    reverse_proxy unix/git/socks/smlib.sock
+}
