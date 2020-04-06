@@ -69,7 +69,7 @@ async def restore_previous_sheet(
         },
         sheet_to_restore.dict(),
     )
-    return result
+    return models.SheetInDB.parse_obj(result)
 
 
 async def get_sheet_by_id(owner_email: str, sheet_id: uuid.UUID) -> models.SheetInDB:

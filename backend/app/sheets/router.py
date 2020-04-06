@@ -95,7 +95,7 @@ async def restore_sheet(
     )
     result = await crud.restore_previous_sheet(sheet_to_restore, current_version_sheet)
     return templates.TemplateResponse(
-        "sheets/updated.html", {"request": request, "sheet_id": result.sheet_id},
+        "sheets/updated.html", {"request": request, "sheet_id": result.sheet_id}
     )
 
 
