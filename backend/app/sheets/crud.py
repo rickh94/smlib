@@ -46,6 +46,32 @@ async def update_sheet(
     return models.SheetInDB.parse_obj(created)
 
 
+async def restore_previous_sheet(
+    sheet_to_restore: models.SheetInDB, current_version_sheet: models.SheetInDB
+) -> models.SheetInDB:
+    sheet_to_restore.current = True
+    versions = [(current_version_sheet.sheet_id, datetime.datetime.now())]
+    versions.extend(
+        [
+            item
+            for item in current_version_sheet.prev_versions
+            if item[1] == sheet_to_restore.sheet_id
+        ]
+    )
+    sheet_to_restore.prev_versions = versions
+    await db.sheets.find_one_and_update(
+        {"sheet_id": current_version_sheet.sheet_id}, {"$set": {"current": False}}
+    )
+    result = await db.sheets.find_one_and_replace(
+        {
+            "sheet_id": sheet_to_restore.sheet_id,
+            "owner_email": sheet_to_restore.owner_email,
+        },
+        sheet_to_restore.dict(),
+    )
+    return result
+
+
 async def get_sheet_by_id(owner_email: str, sheet_id: uuid.UUID) -> models.SheetInDB:
     found = await db.sheets.find_one({"owner_email": owner_email, "sheet_id": sheet_id})
     return models.SheetInDB.parse_obj(found)

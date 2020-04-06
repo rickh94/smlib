@@ -17,23 +17,31 @@
         <p class="text-black">{{ sheet.tags | comma_truncate_list(0) }}</p>
         <h6 class="font-bold text-gray-600 mt-2">Type</h6>
         <p class="text-black">{{ sheet.type or "" }}</p>
-        <p class="text-gray-700 mt-4">
+        <div class="text-gray-700 mt-4">
           <a href="/sheets/{{ sheet.sheet_id }}/download"
-             class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
+             class="hover:text-green-700 p-1 border-b border-gray-700 hover:border-green-700">
             <i class="fas fa-file-download inline-block pr-1"></i>
             Download
           </a>
+          {% if sheet.current %}
           <a href="/sheets/{{ sheet.sheet_id }}/update"
-             class="hover:text-green-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
+             class="hover:text-green-700 ml-2 p-1 border-b border-gray-700 hover:border-green-700">
             <i class="fas fa-pencil-alt inline-block pr-1"></i>
             Edit
           </a>
-          <button id="delete-dialog-button"
-             class="hover:text-red-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-red-700">
+          <a id="delete-dialog-button"
+             class="hover:text-red-700 ml-2 p-1 border-b border-gray-700 hover:border-red-700 cursor-pointer">
             <i class="fas fa-trash-alt inline-block pr-1"></i>
             Delete
-          </button>
-        </p>
+          </a>
+          {% else %}
+            <a id="restore-dialog-button"
+                    class="hover:text-red-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-red-700 cursor-pointer">
+              <i class="fas fa-file-upload inline-block pr-1"></i>
+              Restore
+            </a>
+          {% endif %}
+        </div>
       </div>
       {% if prev_versions  %}
       <div class="mx-2">
@@ -50,6 +58,7 @@
       {% endfor %}
     </div>
   </div>
+  {% if sheet.current %}
   {% call macros.modal('confirmdelete') %}
     {% call macros.modal_body('Confirm Delete') %}
     Are you sure you want to delete {{ sheet.piece }}?
@@ -67,14 +76,39 @@
     </a>
     {% endcall %}
   {% endcall %}
+    {% else %}
+    {% call macros.modal('confirmrestore') %}
+      {% call macros.modal_body('Confirm Restore') %}
+        Are you sure you want to restore this version {{ sheet.piece }}? The current version will become a previous version.
+      {% endcall %}
+      {% call macros.modal_actions() %}
+        <button class="ml-2 p-1 pr-2 border-b border-gray-700 hover:text-green-700 hover:border-green-700"
+                id="cancel-restore-button">
+          <i class="fas fa-arrow-left inline-block pr-1"></i>
+          Cancel
+        </button>
+        <a class="ml-2 p-1 pr-2 border-b border-gray-700 hover:text-red-700 hover:border-red-700"
+           href="/sheets/{{ sheet.sheet_id }}/restore?current_version={{ current_version }}">
+          <i class="fas fa-check inline-block pr-1"></i>
+          Restore
+        </a>
+      {% endcall %}
+    {% endcall %}
+  {% endif %}
 {% endblock body %}
 
 {% block script %}
-{{ macros.modal_script('confirmdelete') }}
-<script>
-  document.getElementById('delete-dialog-button').onclick = openModalConfirmdelete;
-  document.getElementById('cancel-delete-button').onclick = closeModalConfirmdelete;
-</script>
-<script>
-</script>
+  {% if sheet.current %}
+    {{ macros.modal_script('confirmdelete') }}
+    <script>
+      document.getElementById('delete-dialog-button').onclick = openModalConfirmdelete;
+      document.getElementById('cancel-delete-button').onclick = closeModalConfirmdelete;
+    </script>
+    {% else %}
+    {{ macros.modal_script('confirmrestore') }}
+    <script>
+      document.getElementById('restore-dialog-button').onclick = openModalConfirmrestore;
+      document.getElementById('cancel-restore-button').onclick = closeModalConfirmrestore;
+    </script>
+  {% endif %}
 {% endblock script %}

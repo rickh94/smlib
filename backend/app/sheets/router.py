@@ -80,6 +80,25 @@ async def download_sheet_by_id(
     )
 
 
+@sheet_router.get("/{sheet_id}/restore")
+async def restore_sheet(
+    sheet_id: str,
+    request: Request,
+    current_user: UserInDB = Depends(get_current_active_user),
+    current_version=Query(...),
+):
+    sheet_id = uuid.UUID(sheet_id)
+    current_version_id = uuid.UUID(current_version)
+    sheet_to_restore = await crud.get_sheet_by_id(current_user.email, sheet_id)
+    current_version_sheet = await crud.get_sheet_by_id(
+        current_user.email, current_version_id
+    )
+    result = await crud.restore_previous_sheet(sheet_to_restore, current_version_sheet)
+    return templates.TemplateResponse(
+        "sheets/updated.html", {"request": request, "sheet_id": result.sheet_id},
+    )
+
+
 @sheet_router.get("/{sheet_id}/related")
 async def get_related(
     request: Request,
@@ -136,6 +155,7 @@ async def get_sheet_update_form(
     form.tags.data = sheet.tags
     form.instruments.data = sheet.instruments
     form.type.data = sheet.type
+    form.catalog_number.data = sheet.catalog_number
     return templates.TemplateResponse(
         "sheets/update.html",
         {
@@ -198,6 +218,7 @@ async def get_sheet_info(
     request: Request,
     sheet_id: str,
     current_user: UserInDB = Depends(get_current_active_user),
+    current_version: str = Query(None),
 ):
     sheet_id = uuid.UUID(sheet_id)
     sheet = await crud.get_sheet_by_id(current_user.email, sheet_id)
@@ -224,6 +245,7 @@ async def get_sheet_info(
             "sheet": sheet,
             "related_lists": related_lists,
             "prev_versions": prev_version_records,
+            "current_version": current_version,
         },
     )
 

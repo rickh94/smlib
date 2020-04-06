@@ -9,7 +9,7 @@
     <h6 class="font-bold text-red-600 mt-1">Piece</h6>
     <p class="text-black">{{ prev_sheet.piece }}</p>
   {% endif %}
-  {% if sheet.catalog_number != prev_sheet.piece %}
+  {% if sheet.catalog_number != prev_sheet.catalog_number %}
     <h6 class="font-bold text-red-600 mt-1">Catalog Number</h6>
     <p class="text-black">{{ prev_sheet.catalog_number }}</p>
   {% endif %}
@@ -34,7 +34,7 @@
        class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
       <i class="fas fa-file-download inline-block pr-1"></i>
       Download</a>
-    <a href="/sheets/{{ prev_sheet.sheet_id }}"
+    <a href="/sheets/{{ prev_sheet.sheet_id }}?current_version={{ sheet.sheet_id }}"
        class="ml-2 hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700"
        title="More Info">
       <i class="fas fa-info-circle inline-block pr-1"></i>

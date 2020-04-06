@@ -25,8 +25,9 @@ def cli():
 
 
 @cli.command()
-def createsuperuser():
-    email = click.prompt("Email", type=str)
+@click.option("-e", "--email", prompt=True, type=str)
+def createsuperuser(email):
+    # email = click.prompt("Email", type=str)
     admin = UserInDB(email=email, role=AuthRole.admin)
     result = db.users.insert_one(admin.dict())
     if result.inserted_id:

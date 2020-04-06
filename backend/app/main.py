@@ -44,6 +44,7 @@ async def setup_db():
             ("composers", pymongo.TEXT),
             ("tags", pymongo.TEXT),
             ("catalog_number", pymongo.TEXT),
+            ("genre", pymongo.TEXT),
         ],
         default_language="english",
     )
