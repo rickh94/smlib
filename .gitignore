@@ -200,3 +200,4 @@ docker-compose.yml
 out
 static/*
 backend/testdata
+.idea
