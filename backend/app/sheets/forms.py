@@ -54,3 +54,8 @@ class SheetForm(CSRFForm):
 
 class UpdateSheetForm(SheetForm):
     sheet_file = wtforms.FileField("Sheet File (optional)")
+
+
+class SearchForm(CSRFForm):
+    search_terms = wtforms.StringField()
+    submit = wtforms.SubmitField("Search")

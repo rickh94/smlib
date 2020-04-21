@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+  <form action="/sheets/search" class="w-full md:max-w-xl mx-auto" method="post">
+    <h1 class="text-xl font-bold text-green-800 pt-5 pb-0">Search for Sheets</h1>
+    {{ form.csrf_token }}
+    {{ macros.text_input(form.search_terms) }}
+    {{ macros.submit_field(form.submit) }}
+  </form>
+
+{% endblock body %}

@@ -9,3 +9,11 @@
 * {
     box-sizing: border-box;
 }
+
+.text-shadow {
+    text-shadow: 0 0 1px #aaa;
+}
+
+.hover\:text-shadow:hover {
+    text-shadow: 0 0 1px #aaa;
+}

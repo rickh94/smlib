@@ -15,16 +15,32 @@
 </head>
 <body class="h-full">
 <header>
-  <nav id="main-nav" class="bg-green-300 border-green-700 border-b py-1 px-3 md:px-4 text-green-900 shadow">
-    <a href="{{ url_for("index") }}" class="text-center block w-full sm:inline text-xl font-bold mr-2">Sheet Music Library</a>
+  <nav id="main-nav"
+       class="bg-green-300 border-green-700 border-b py-1 px-3 md:px-4 text-green-900 shadow">
+    <a href="{{ url_for("index") }}"
+       class="text-center block w-full sm:inline text-xl font-bold mr-2">Sheet Music
+      Library</a>
     <div class="text-center sm:text-left w-full sm:inline">
       <a href="/sheets" class="mr-2 hover:border-b border-green-700">Sheets</a>
       <a href="/composers" class="mr-2 hover:border-b border-green-700">Composers</a>
       <a href="/tags" class="mr-2 hover:border-b border-green-700">Tags</a>
-      <a href="/instruments" class="mr-2 hover:border-b border-green-700">Instruments</a>
+      <a href="/instruments"
+         class="mr-2 hover:border-b border-green-700">Instruments</a>
     </div>
+    <form id="search-form"
+          class="flex justify-center w-full sm:w-auto sm:inline-block sm:m-0"
+          action="/sheets/search" method="get">
+      <div class="border-green-700 border p-0 my-1 bg-green-100">
+        <input type="text" class="bg-transparent px-2 py-1 mx-0 placeholder-gray-600"
+               title="Search" placeholder="Search" name="search"
+        >
+        <button class="mx-0 bg-green-700 text-white px-2 py-1" title="Search">
+          <i class="fas fa-search"></i></button>
+      </div>
+    </form>
 
-    <a href="/auth/logout" class="hidden sm:inline bg-green-200 border-green-200 border py-1 px-3 mx-1">Logout</a>
+    <a href="/auth/logout"
+       class="hidden sm:inline bg-green-200 border-green-200 border py-1 px-3 mx-1">Logout</a>
   </nav>
 </header>
 <main id="main-body" class="container px-2 sm:px-0 sm:mx-auto">
@@ -38,6 +54,7 @@
 {% block script %}
 
 {% endblock script %}
-<script src="https://kit.fontawesome.com/8a8701572c.js" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/8a8701572c.js"
+        crossorigin="anonymous"></script>
 </body>
 </html>

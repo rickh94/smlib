@@ -1,9 +1,7 @@
 import datetime
-import os
 import uuid
 from typing import List
 
-import pymongo
 from motor import motor_asyncio
 
 from app.dependencies import db
@@ -172,3 +170,38 @@ async def delete_sheet_by_id(owner_email: str, sheet_id: uuid.UUID):
                 {"owner_email": owner_email, "sheet_id": version_id}
             )
     await db.sheets.delete_one({"owner_email": owner_email, "sheet_id": sheet_id})
+
+
+def find_sheet_from_text(
+    owner_email: str,
+    search_terms: str,
+    page: int = 1,
+    sort: str = "piece",
+    direction: int = 1,
+    limit: int = 20,
+):
+    skip = limit * (page - 1)
+    return db.sheets.find(
+        {
+            "owner_email": owner_email,
+            "current": True,
+            "$text": {"$search": search_terms},
+        },
+        sort=[(sort, direction)],
+        limit=limit,
+        skip=skip,
+    )
+
+
+async def sheet_search_has_next(owner_email, search_text, page, limit):
+    skip = limit * page
+    count = await db.sheets.count_documents(
+        {
+            "owner_email": owner_email,
+            "current": True,
+            "$text": {"$search": search_text},
+        },
+        limit=limit,
+        skip=skip,
+    )
+    return count > 0

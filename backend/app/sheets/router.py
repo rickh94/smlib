@@ -12,11 +12,50 @@ from app.auth.security import get_current_active_user
 from app.dependencies import templates
 from app.util import get_next_prev_page_urls, get_sort_links
 from app.sheets import models, storage, crud
-from app.sheets.forms import SheetForm, UpdateSheetForm
+from app.sheets.forms import SheetForm, UpdateSheetForm, SearchForm
 
 sheet_router = APIRouter()
 
 logger = logging.getLogger()
+
+
+@sheet_router.get("/search")
+async def search_sheets(
+    request: Request,
+    current_user: UserInDB = Depends(get_current_active_user),
+    search: str = Query(...),
+    page: int = Query(1),
+    sort: str = Query("piece"),
+    direction: int = Query(1),
+):
+    limit = int(os.getenv("SHEETS_PER_PAGE", 20))
+    found = crud.find_sheet_from_text(
+        current_user.email,
+        search,
+        page=page,
+        sort=sort,
+        direction=direction,
+        limit=limit,
+    )
+    sheets = [models.SheetOut.parse_obj(item) async for item in found]
+    sort_links = get_sort_links(request.url, sort, direction)
+    prev_page, next_page = get_next_prev_page_urls(request.url, page)
+    if not await crud.sheet_search_has_next(current_user.email, search, page, limit):
+        next_page = None
+    return templates.TemplateResponse(
+        "list.html",
+        {
+            "request": request,
+            "page": page,
+            "sort": sort,
+            "direction": direction,
+            "sheets": sheets,
+            "prev_page": prev_page,
+            "next_page": next_page,
+            "title": "Found Sheets",
+            "sort_links": sort_links,
+        },
+    )
 
 
 @sheet_router.get("/create")
