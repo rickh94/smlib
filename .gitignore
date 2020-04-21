@@ -201,3 +201,4 @@ out
 static/*
 backend/testdata
 .idea
+node_modules
