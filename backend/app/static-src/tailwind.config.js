@@ -17,6 +17,7 @@ module.exports = {
     borderWidth: ['last', 'first', 'responsive', 'hover', 'focus'],
     borderColor: ['last', 'responsive', 'hover', 'focus', 'first', 'focus-within', 'even', 'odd'],
     backgroundColor: ['last', 'first', 'hover', 'focus', 'even', 'odd'],
+    shadow: ['hover', 'focus', 'focus-within']
   },
   plugins: [],
 };

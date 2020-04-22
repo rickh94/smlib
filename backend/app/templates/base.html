@@ -16,11 +16,18 @@
 <body class="h-full">
 <header>
   <nav id="main-nav"
-       class="bg-green-300 border-green-700 border-b py-1 px-3 md:px-4 text-green-900 shadow">
-    <a href="{{ url_for("index") }}"
-       class="text-center block w-full sm:inline text-xl font-bold mr-2">Sheet Music
-      Library</a>
-    <div class="text-center sm:text-left w-full sm:inline">
+       class="bg-green-300 border-green-700 border-b py-1 px-3 md:px-4 text-green-900 shadow"
+  x-data="{'show': true}"
+  >
+    <span class="w-full md:inline text-xl inline-flex justify-center">
+      <a href="{{ url_for("index") }}"
+         class="text-center md:inline text-xl font-bold mr-2">Sheet Music
+        Library</a>
+      <button class="md:hidden px-2 focus:outline-none" @click="show = !show"  x-bind:title="show ? 'Hide navigation' : 'Show navigation'">
+        <i class="fas" x-bind:class="{'fa-caret-square-down': show === false, 'fa-caret-square-up': show === true}"></i>
+      </button>
+    </span>
+    <div class="text-center md:text-left w-full" x-bind:class="{'hidden md:inline': !show, 'block md:inline': show}">
       <a href="/sheets" class="mr-2 hover:border-b border-green-700">Sheets</a>
       <a href="/composers" class="mr-2 hover:border-b border-green-700">Composers</a>
       <a href="/tags" class="mr-2 hover:border-b border-green-700">Tags</a>
@@ -28,8 +35,10 @@
          class="mr-2 hover:border-b border-green-700">Instruments</a>
     </div>
     <form id="search-form"
-          class="flex justify-center w-full sm:w-auto sm:inline-block sm:m-0"
-          action="/sheets/search" method="get">
+          class="flex justify-center w-full md:w-auto md:m-0"
+          action="/sheets/search" method="get"
+          x-bind:class="{'hidden md:inline-block': !show , 'block md:inline-block': show}"
+    >
       <div class="border-green-700 border p-0 my-1 bg-green-100">
         <input type="text" class="bg-transparent px-2 py-1 mx-0 placeholder-gray-600"
                title="Search" placeholder="Search" name="search"
@@ -39,8 +48,9 @@
       </div>
     </form>
 
+
     <a href="/auth/logout"
-       class="hidden sm:inline bg-green-200 border-green-200 border py-1 px-3 mx-1">Logout</a>
+       class="hidden lg:inline-block bg-green-200 border-green-200 border pt-1 pb-1 px-3 ml-auto hover:shadow">Logout</a>
   </nav>
 </header>
 <main id="main-body" class="container px-2 sm:px-0 sm:mx-auto">
@@ -48,7 +58,7 @@
 
   {% endblock body %}
 </main>
-<footer class="block sm:hidden m-0 pin-b flex justify-center mt-8 border-t pt-2">
+<footer class="block lg:hidden m-0 pin-b flex justify-center mt-8 border-t pt-2">
   <a href="/auth/logout" class="bg-gray-200 border-gray-200 border py-1 px-3 mx-1">Logout</a>
 </footer>
 {% block script %}
@@ -56,5 +66,6 @@
 {% endblock script %}
 <script src="https://kit.fontawesome.com/8a8701572c.js"
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
 </body>
 </html>
