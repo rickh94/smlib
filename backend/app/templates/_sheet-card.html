@@ -1,3 +1,4 @@
+{% import "macros.html" as macros %}
 <div class="shadow border border-gray-100 rounded my-2 px-4 pb-4 pt-2"
      x-data="{showPreview: false}">
   <h6 class="font-bold text-gray-600">Composer</h6>
@@ -32,13 +33,13 @@
   <p class="text-black">{{ sheet.type or "" }}</p>
   <div class="text-gray-700 mt-2 flex">
     <a href="/sheets/{{ sheet.sheet_id }}/download"
-       class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700">
-      <i class="fas fa-file-download inline-block pr-1"></i>
+       class="hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700 flex items-center">
+      <i class="icon-download pr-1"></i>
       Download</a>
     <a href="/sheets/{{ sheet.sheet_id }}"
        class="ml-2 hover:text-green-700 p-1 pr-2 border-b border-gray-700 hover:border-green-700"
        title="More Info">
-      <i class="fas fa-info-circle inline-block pr-1"></i>
+      <i class="icon-folder inline-block pr-1"></i>
       More Info
     </a>
     <button
@@ -48,6 +49,6 @@
       <i class="icon-preview pr-1"></i>
       Preview
     </button>
-    {{ macros.preview('/static/ludwigs-tango-bass-preview.png', 'Sheet Preview') }}
+    {{ macros.preview(sheet.sheet_id) }}
   </div>
 </div>

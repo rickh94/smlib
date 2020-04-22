@@ -1,5 +1,6 @@
-from kennethreitz/pipenv
+FROM kennethreitz/pipenv
 
+RUN apt-get install -y
 ADD ./app /app/app
 VOLUME /socks
 WORKDIR /app

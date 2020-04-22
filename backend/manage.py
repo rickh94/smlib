@@ -1,9 +1,11 @@
 import os
+import tempfile
 from pathlib import Path
 from urllib.parse import quote_plus
 
 import click
 import pymongo
+from pdf2image import convert_from_bytes
 
 from app.auth.models import UserInDB, AuthRole
 from app.dependencies import minio_client
@@ -60,6 +62,26 @@ def createdata():
             sheet_file,
             sheet_stats.st_size,
         )
+        sheet_file.seek(0)
+        images = convert_from_bytes(
+            sheet_file.read(),
+            dpi=50,
+            use_cropbox=True,
+            first_page=1,
+            last_page=1,
+            grayscale=True,
+        )
+        tmp_preview = tempfile.NamedTemporaryFile()
+        images[0].save(tmp_preview, format="PNG")
+        tmp_preview.seek(0)
+        preview_stats = os.stat(tmp_preview.name)
+        minio_client.put_object(
+            os.getenv("MINIO_BUCKET_NAME"),
+            f"{sheet.owner_email}/{sheet.sheet_id}-preview.png",
+            tmp_preview,
+            preview_stats.st_size,
+        )
+        tmp_preview.close()
         sheet_file.close()
 
 

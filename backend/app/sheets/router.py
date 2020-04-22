@@ -3,6 +3,7 @@ import os
 import string
 import uuid
 
+import minio
 from fastapi import APIRouter, Depends, UploadFile, File, Query
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, RedirectResponse
@@ -117,6 +118,18 @@ async def download_sheet_by_id(
         data.stream(32 * 1024),
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+@sheet_router.get("/{sheet_id}/preview")
+async def get_sheet_preview_by_id(
+    sheet_id: str, current_user: UserInDB = Depends(get_current_active_user)
+):
+    sheet_id = uuid.UUID(sheet_id)
+    try:
+        data = storage.get_preview(sheet_id, current_user.email)
+        return StreamingResponse(data.stream(32 * 1024))
+    except minio.error.NoSuchKey:
+        return None
 
 
 @sheet_router.get("/{sheet_id}/restore")

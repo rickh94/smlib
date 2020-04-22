@@ -1,85 +1,68 @@
 {% extends "base.html" %}
 {% block body %}
-  <div class="mt-2 mx-4 w-full text-lg">
-    <div class="flex flex-wrap" x-data="{'showPreview': false}">
-      <div
-          class="fixed inset-0 z-50 overflow-hidden bg-smoke-lighter md:bg-smoke-light flex"
-          x-show="showPreview"
-          @keydown.escape.window="showPreview = false"
-      >
-        <div
-            class="bg-white fixed relative h-auto max-w-md m-auto flex-col flex shadow"
-            @click.away="showPreview = false"
+  <div class="mt-2 mx-4 w-full text-lg" x-data="{showPreview: false}">
+    {{ macros.preview(sheet.sheet_id) }}
+    <div class="mx-2 mb-2">
+      <h6 class="font-bold text-gray-600">Composer</h6>
+      <p class="text-black">{{ sheet.composers | comma_truncate_list(0) }}</p>
+      <h6 class="font-bold text-gray-600 mt-2">Piece</h6>
+      <p class="text-black">{{ sheet.piece }}</p>
+      <h6 class="font-bold text-gray-600 mt-2">Catalog Number</h6>
+      <p class="text-black">{{ sheet.catalog_number }}</p>
+      <h6 class="font-bold text-gray-600 mt-2">Genre</h6>
+      <p class="text-black">{{ sheet.genre or "" }}</p>
+      <h6 class="font-bold text-gray-600 mt-2">Instruments</h6>
+      <p class="text-black">{{ sheet.instruments | comma_truncate_list(0) }}</p>
+      <h6 class="font-bold text-gray-600 mt-2">Tags</h6>
+      <p class="text-black">{{ sheet.tags | comma_truncate_list(0) }}</p>
+      <h6 class="font-bold text-gray-600 mt-2">Type</h6>
+      <p class="text-black">{{ sheet.type or "" }}</p>
+      <div class="text-gray-800 mt-4 flex">
+        <button
+            class="hover:text-green-700 p-1 border-b border-gray-700 hover:border-green-700 cursor-pointer flex items-center"
+            @click="showPreview = !showPreview"
         >
-          <img x-bind:src="showPreview ? '/static/ludwigs-tango-bass-preview.png' : ''"
-               alt="">
-          <button class="w-full bg-black text-white py-2"
-                  @click="showPreview = false">Close Preview
-          </button>
-        </div>
-      </div>
-      <div class="mx-2 mb-2">
-        <h6 class="font-bold text-gray-600">Composer</h6>
-        <p class="text-black">{{ sheet.composers | comma_truncate_list(0) }}</p>
-        <h6 class="font-bold text-gray-600 mt-2">Piece</h6>
-        <p class="text-black">{{ sheet.piece }}</p>
-        <h6 class="font-bold text-gray-600 mt-2">Catalog Number</h6>
-        <p class="text-black">{{ sheet.catalog_number }}</p>
-        <h6 class="font-bold text-gray-600 mt-2">Genre</h6>
-        <p class="text-black">{{ sheet.genre or "" }}</p>
-        <h6 class="font-bold text-gray-600 mt-2">Instruments</h6>
-        <p class="text-black">{{ sheet.instruments | comma_truncate_list(0) }}</p>
-        <h6 class="font-bold text-gray-600 mt-2">Tags</h6>
-        <p class="text-black">{{ sheet.tags | comma_truncate_list(0) }}</p>
-        <h6 class="font-bold text-gray-600 mt-2">Type</h6>
-        <p class="text-black">{{ sheet.type or "" }}</p>
-        <div class="text-gray-800 mt-4 flex">
-          <button
-              class="hover:text-green-700 p-1 border-b border-gray-700 hover:border-green-700 cursor-pointer flex items-center"
-              @click="showPreview = !showPreview"
-          >
-            <i class="icon-preview pr-1"></i>
-            Preview
-          </button>
-          <a href="/sheets/{{ sheet.sheet_id }}/download"
+          <i class="icon-preview pr-1"></i>
+          Preview
+        </button>
+        <a href="/sheets/{{ sheet.sheet_id }}/download"
+           class="hover:text-green-700 ml-2 p-1 border-b border-gray-700 hover:border-green-700 flex items-center">
+          <i class="icon-download pr-1"></i>
+          Download
+        </a>
+        {% if sheet.current %}
+          <a href="/sheets/{{ sheet.sheet_id }}/update"
              class="hover:text-green-700 ml-2 p-1 border-b border-gray-700 hover:border-green-700 flex items-center">
-            <i class="icon-download pr-1"></i>
-            Download
-          </a>
-          {% if sheet.current %}
-            <a href="/sheets/{{ sheet.sheet_id }}/update"
-               class="hover:text-green-700 ml-2 p-1 border-b border-gray-700 hover:border-green-700 flex items-center">
             <i class="icon-edit pr-1"></i>
-              Edit
-            </a>
-            <a id="delete-dialog-button"
-               class="hover:text-red-700 ml-2 p-1 border-b border-gray-700 hover:border-red-700 cursor-pointer flex items-center">
+            Edit
+          </a>
+          <a id="delete-dialog-button"
+             class="hover:text-red-700 ml-2 p-1 border-b border-gray-700 hover:border-red-700 cursor-pointer flex items-center">
             <i class="icon-delete pr-1"></i>
-              Delete
-            </a>
-          {% else %}
-            <a id="restore-dialog-button"
-               class="hover:text-red-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-red-700 cursor-pointer flex items-center">
-              <i class="icon-upload pr-1"></i>
-              Restore
-            </a>
-          {% endif %}
-        </div>
+            Delete
+          </a>
+        {% else %}
+          <a id="restore-dialog-button"
+             class="hover:text-red-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-red-700 cursor-pointer flex items-center">
+            <i class="icon-upload pr-1"></i>
+            Restore
+          </a>
+        {% endif %}
       </div>
-      {% if prev_versions %}
-        <div class="mx-2">
-          <h4 class="font-bold text-gray-600">Previous Versions</h4>
-          {% for (prev_sheet, replacement_time) in prev_versions %}
-            {% include "sheets/_prev-sheet-card.html" %}
-          {% endfor %}
-        </div>
-      {% endif %}
     </div>
-    <div class="flex flex-col md:flex-row mt-4 flex-wrap">
-      {% for field, info in related_lists.items() %}
-        {{ macros.related_list(field, info, sheet) }}
-      {% endfor %}
-    </div>
+    {% if prev_versions %}
+      <div class="mx-2">
+        <h4 class="font-bold text-gray-600">Previous Versions</h4>
+        {% for (prev_sheet, replacement_time) in prev_versions %}
+          {% include "sheets/_prev-sheet-card.html" %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  <div class="flex flex-col md:flex-row mt-4 flex-wrap">
+    {% for field, info in related_lists.items() %}
+      {{ macros.related_list(field, info, sheet) }}
+    {% endfor %}
   </div>
   {% if sheet.current %}
     {% call macros.modal('confirmdelete') %}

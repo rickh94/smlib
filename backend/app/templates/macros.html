@@ -255,7 +255,7 @@
   </div>
 {% endmacro %}
 
-{% macro preview(url, alt) %}
+{% macro preview(sheet_id) %}
 
   <div
       class="fixed inset-0 z-50 overflow-hidden bg-smoke-lighter md:bg-smoke-light flex"
@@ -266,8 +266,8 @@
         class="bg-white fixed relative h-auto max-w-md m-auto flex-col flex shadow"
         @click.away="showPreview = false"
     >
-      <img x-bind:src="showPreview ? '{{ url }}' : ''"
-           alt="{{ alt }}">
+      <img x-bind:src="showPreview ? '/sheets/{{ sheet_id }}/preview' : ''"
+           alt="No Preview Available">
       <button class="w-full bg-black text-white py-2 hover:bg-red-700"
               @click="showPreview = false">Close Preview
       </button>
