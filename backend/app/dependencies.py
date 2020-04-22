@@ -59,4 +59,11 @@ def comma_truncate_list(items: list, limit: int = 3):
     return ", ".join(show_items) + suffix
 
 
+def comma_list(items: list):
+    if not items:
+        return ""
+    return ", ".join(items)
+
+
 templates.env.filters["comma_truncate_list"] = comma_truncate_list
+templates.env.filters["comma_list"] = comma_list

@@ -1,6 +1,12 @@
 <div class="shadow border border-gray-100 rounded my-2 px-4 pb-4 pt-2">
   <h6 class="font-bold text-gray-600">Composer</h6>
-  <p class="text-black">{{ sheet.composers | comma_truncate_list }}</p>
+  <p class="text-black">
+    <a href="/sheets/{{ sheet.sheet_id }}/related?field=composers"
+       class="hover:text-shadow"
+       title="{{ sheet.composers | comma_list }}">
+      {{ sheet.composers | comma_truncate_list }}
+    </a>
+  </p>
   <h6 class="font-bold text-gray-600 mt-1">Piece</h6>
   <p class="text-black">{{ sheet.piece }}</p>
   <h6 class="font-bold text-gray-600 mt-1">Catalog Number</h6>
@@ -8,9 +14,19 @@
   <h6 class="font-bold text-gray-600 mt-1">Genre</h6>
   <p class="text-black">{{ sheet.genre or "" }}</p>
   <h6 class="font-bold text-gray-600 mt-1">Instruments</h6>
-  <p class="text-black">{{ sheet.instruments | comma_truncate_list(6) }}</p>
+  <p class="text-black">
+    <a href="/sheets/{{ sheet.sheet_id }}/related?field=instruments"
+       class="hover:text-shadow" title="{{ sheet.instruments | comma_list }}">
+      {{ sheet.instruments | comma_truncate_list }}
+    </a>
+  </p>
   <h6 class="font-bold text-gray-600 mt-1">Tags</h6>
-  <p class="text-black">{{ sheet.tags | comma_truncate_list(6) }}</p>
+  <p class="text-black">
+    <a href="/sheets/{{ sheet.sheet_id }}/related?field=tags" class="hover:text-shadow"
+       title="{{ sheet.tags | comma_list }}">
+      {{ sheet.tags | comma_truncate_list }}
+    </a>
+  </p>
   <h6 class="font-bold text-gray-600 mt-1">Type</h6>
   <p class="text-black">{{ sheet.type or "" }}</p>
   <p class="text-gray-700 mt-2">
