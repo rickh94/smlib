@@ -254,3 +254,23 @@
     {% endfor %}
   </div>
 {% endmacro %}
+
+{% macro preview(url, alt) %}
+
+  <div
+      class="fixed inset-0 z-50 overflow-hidden bg-smoke-lighter md:bg-smoke-light flex"
+      x-show="showPreview"
+      @keydown.escape.window="showPreview = false"
+  >
+    <div
+        class="bg-white fixed relative h-auto max-w-md m-auto flex-col flex shadow"
+        @click.away="showPreview = false"
+    >
+      <img x-bind:src="showPreview ? '{{ url }}' : ''"
+           alt="{{ alt }}">
+      <button class="w-full bg-black text-white py-2 hover:bg-red-700"
+              @click="showPreview = false">Close Preview
+      </button>
+    </div>
+  </div>
+{% endmacro %}

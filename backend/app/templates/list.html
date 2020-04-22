@@ -2,11 +2,13 @@
 {% block body %}
   <div class="mx-4">
 
-    <header class="my-2">
+    <header class="my-2 flex">
       <h1 class="text-xl font-bold text-green-800 mr-4 inline-block py-1">{{ title }}
       </h1><a
-        class="inline-block bg-green-200 border-b border-green-800 text-green-800 px-2 py-1 hover:shadow"
-        href="/sheets/create">Create</a>
+        class="inline-block bg-green-200 border-b border-green-800 text-green-800 px-2 py-1 hover:shadow flex items-center"
+        href="/sheets/create">
+      <i class="icon-add pr-1"></i>
+      Create</a>
     </header>
     <table class="hidden md:block border-collapse w-full p-0 shadow">
       <thead class="w-full inline-block">

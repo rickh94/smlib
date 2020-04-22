@@ -18,6 +18,6 @@
     "build:prod": "postcss --env production -o out/main.css main.css && cp *.js out && rm out/*.config.js",
     "build:watch": "postcss -w -o ../static/main.css main.css",
     "postcss": "postcss",
-    "copyfiles": "postcss -o out/main.css main.css && cp *.js out/*.css ../static && rm ../static/*.config.js"
+    "copyfiles": "postcss -o out/main.css main.css && cp -r *.js out/*.css ./fonts icons.css ../static && rm ../static/*.config.js"
   }
 }

@@ -33,34 +33,34 @@
         <p class="text-black">{{ sheet.tags | comma_truncate_list(0) }}</p>
         <h6 class="font-bold text-gray-600 mt-2">Type</h6>
         <p class="text-black">{{ sheet.type or "" }}</p>
-        <div class="text-gray-700 mt-4">
+        <div class="text-gray-800 mt-4 flex">
           <button
-              class="hover:text-green-700 p-1 border-b border-gray-700 hover:border-green-700 cursor-pointer"
+              class="hover:text-green-700 p-1 border-b border-gray-700 hover:border-green-700 cursor-pointer flex items-center"
               @click="showPreview = !showPreview"
           >
-            <i class="fas fa-eye inline-block pr-1"></i>
+            <i class="icon-preview pr-1"></i>
             Preview
           </button>
           <a href="/sheets/{{ sheet.sheet_id }}/download"
-             class="hover:text-green-700 p-1 border-b border-gray-700 hover:border-green-700">
-            <i class="fas fa-file-download inline-block pr-1"></i>
+             class="hover:text-green-700 ml-2 p-1 border-b border-gray-700 hover:border-green-700 flex items-center">
+            <i class="icon-download pr-1"></i>
             Download
           </a>
           {% if sheet.current %}
             <a href="/sheets/{{ sheet.sheet_id }}/update"
-               class="hover:text-green-700 ml-2 p-1 border-b border-gray-700 hover:border-green-700">
-              <i class="fas fa-pencil-alt inline-block pr-1"></i>
+               class="hover:text-green-700 ml-2 p-1 border-b border-gray-700 hover:border-green-700 flex items-center">
+            <i class="icon-edit pr-1"></i>
               Edit
             </a>
             <a id="delete-dialog-button"
-               class="hover:text-red-700 ml-2 p-1 border-b border-gray-700 hover:border-red-700 cursor-pointer">
-              <i class="fas fa-trash-alt inline-block pr-1"></i>
+               class="hover:text-red-700 ml-2 p-1 border-b border-gray-700 hover:border-red-700 cursor-pointer flex items-center">
+            <i class="icon-delete pr-1"></i>
               Delete
             </a>
           {% else %}
             <a id="restore-dialog-button"
-               class="hover:text-red-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-red-700 cursor-pointer">
-              <i class="fas fa-file-upload inline-block pr-1"></i>
+               class="hover:text-red-700 ml-2 p-1 pr-2 border-b border-gray-700 hover:border-red-700 cursor-pointer flex items-center">
+              <i class="icon-upload pr-1"></i>
               Restore
             </a>
           {% endif %}
