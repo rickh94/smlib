@@ -1,0 +1,16 @@
+<div
+    class="fixed inset-0 z-50 overflow-hidden bg-smoke-lighter md:bg-smoke-light flex"
+    x-show="showPreview"
+    @keydown.escape.window="showPreview = false; previewUrl = ''"
+>
+  <div
+      class="bg-white fixed relative h-auto max-w-md m-auto flex-col flex shadow"
+      @click.away="showPreview = false"
+  >
+    <img x-bind:src="previewUrl"
+         alt="No Preview Available">
+    <button class="w-full bg-black text-white py-2 hover:bg-red-700"
+            @click="showPreview = false; previewUrl = ''">Close Preview
+    </button>
+  </div>
+</div>

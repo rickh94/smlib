@@ -1,6 +1,5 @@
 {% import "macros.html" as macros %}
-<div class="shadow border border-gray-100 rounded my-2 px-4 pb-4 pt-2"
-     x-data="{showPreview: false}">
+<div class="shadow border border-gray-100 rounded my-2 px-4 pb-4 pt-2">
   <h6 class="font-bold text-gray-600">Composer</h6>
   <p class="text-black">
     <a href="/sheets/{{ sheet.sheet_id }}/related?field=composers"
@@ -42,13 +41,6 @@
       <i class="icon-folder inline-block pr-1"></i>
       More Info
     </a>
-    <button
-        class="ml-2 hover:text-green-700 p-1 border-b border-gray-700 hover:border-green-700 cursor-pointer flex items-center"
-        @click="showPreview = !showPreview"
-    >
-      <i class="icon-preview pr-1"></i>
-      Preview
-    </button>
-    {{ macros.preview(sheet.sheet_id) }}
+    {{ macros.open_preview_button(sheet.sheet_id) }}
   </div>
 </div>

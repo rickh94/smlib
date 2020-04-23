@@ -33,11 +33,11 @@
   {% set openModalFunc = 'openModal' + name | capitalize %}
   {% set closeModalFunc = 'closeModal' + name | capitalize %}
   <script>
-    var {{ modalWrapperEl }} =
+    var {{ modalWrapperEl }} =;
     document.getElementById('modal-wrapper-{{ name }}');
-    var {{ closeButton }} =
+    var {{ closeButton }} =;
     document.getElementById('close-modal-{{ name }}');
-    var {{ modalEl }} =
+    var {{ modalEl }} =;
     document.getElementById('modal-{{ name }}');
 
     function close{{ name | capitalize }}OnEscape(event) {
@@ -255,22 +255,18 @@
   </div>
 {% endmacro %}
 
-{% macro preview(sheet_id) %}
-
-  <div
-      class="fixed inset-0 z-50 overflow-hidden bg-smoke-lighter md:bg-smoke-light flex"
-      x-show="showPreview"
-      @keydown.escape.window="showPreview = false"
+{% macro open_preview_button(sheet_id, text=True, button_classes=None) %}
+  {% if not button_classes %}
+    {% set button_classes = "ml-2 hover:text-green-700 p-1 border-b border-gray-700 hover:border-green-700 cursor-pointer flex items-center" %}
+  {% endif %}
+  <button
+      class="{{ button_classes }}"
+      @click="showPreview = true; previewUrl = '/sheets/{{ sheet_id }}/preview'"
+      title="Show Preview"
   >
-    <div
-        class="bg-white fixed relative h-auto max-w-md m-auto flex-col flex shadow"
-        @click.away="showPreview = false"
-    >
-      <img x-bind:src="showPreview ? '/sheets/{{ sheet_id }}/preview' : ''"
-           alt="No Preview Available">
-      <button class="w-full bg-black text-white py-2 hover:bg-red-700"
-              @click="showPreview = false">Close Preview
-      </button>
-    </div>
-  </div>
+    <i class="icon-preview pr-1"></i>
+    {% if text %}
+      Preview
+    {% endif %}
+  </button>
 {% endmacro %}

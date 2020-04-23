@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
-  <div class="mx-4">
-
+  <div class="mx-4" x-data="{showPreview: false, previewUrl: ''}">
+    {% include "_preview_modal.html" %}
     <header class="my-2 flex">
       <h1 class="text-xl font-bold text-green-800 mr-4 inline-block py-1">{{ title }}
       </h1><a
@@ -15,7 +15,7 @@
       <tr class="border-b-2 border-gray-800 px-4 text-gray-800 font-bold text-lg block w-full">
         {{ macros.table_header('Composer', 'composers', sort_links, sort, direction, 2) }}
         {{ macros.table_header('Piece', 'piece', sort_links, sort, direction, 2) }}
-{#        {{ macros.table_header('Catalog Number', 'catalog_number', sort_links, sort, direction, 2) }}#}
+        {#        {{ macros.table_header('Catalog Number', 'catalog_number', sort_links, sort, direction, 2) }}#}
         {{ macros.table_header('Genre', 'genre', sort_links, sort, direction, 1) }}
         {{ macros.table_header('Tags', 'tags', sort_links, sort, direction, 2) }}
         {{ macros.table_header('Instruments', 'instruments', sort_links, sort, direction, 2) }}

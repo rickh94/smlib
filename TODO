@@ -2,3 +2,4 @@ create homepage with recently accessed
 fix bug showing empty tag (??)
 create genre section
 change some breakpoints
+track recent searches and accessed records on user
